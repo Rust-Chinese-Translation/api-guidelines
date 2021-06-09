@@ -11,7 +11,7 @@
     .sidetoc {
         margin-left: auto;
         margin-right: auto;
-        left: calc(90% + (var(--content-min-width))/4 - 80px);
+        left: calc(90% + (var(--content-min-width))/4 - 110px);
         position: absolute;
         font-size: var(--pagetoc-fontsize);
     }
