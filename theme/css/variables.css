@@ -2,15 +2,23 @@
 /* Globals */
 
 :root {
-    --sidebar-width: 130px;
+    --sidebar-width: 140px;
     --page-padding: 15px;
-    --content-max-width: 3050px;
-    --content-max-width: 75%;
-    --content-min-width: 1000px;
+    /* --content-max-width: 3050px; */
+    --content-max-width: 82%;
+    /* --content-min-width: 1000px; */
     --menu-bar-height: 40px;
     /* added pagetoc setting */
-    --pagetoc-width: 300px;
-    --pagetoc-fontsize: 16px;
+    /* --pagetoc-width: 300px; */
+    --pagetoc-width: 12%;
+    --pagetoc-fontsize: 15px;
+}
+
+
+@media only screen and (max-width:1439px) {
+    :root{
+        --content-max-width: 98%;
+    }
 }
 
 /* Themes */
