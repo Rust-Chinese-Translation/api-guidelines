@@ -4,12 +4,13 @@
 :root {
     --sidebar-width: 150px;
     --page-padding: 15px;
-    --content-max-width: 1050px;
-    --content-min-width: 800px;
+    --content-max-width: 3050px;
+    --content-max-width: 75%;
+    --content-min-width: 1000px;
     --menu-bar-height: 40px;
     /* added pagetoc setting */
     --pagetoc-width: 200px;
-    --pagetoc-fontsize: 12px;
+    --pagetoc-fontsize: 16px;
 }
 
 /* Themes */
