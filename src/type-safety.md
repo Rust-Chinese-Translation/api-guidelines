@@ -24,7 +24,7 @@ impl Kilometers {
 ```
 
 一旦对这两种类型作区分，我们能静态地确保不把他们混为一谈。
-打个比方，下面这个函数不节能意外地调用 `Kilometers` 类型的值。
+打个比方，下面这个函数不出意外地会调用 `Kilometers` 类型的值。
 
 ```rust,ignored
 fn are_we_there_yet(distance_travelled: Miles) -> bool { /* ... */ }

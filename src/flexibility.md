@@ -161,7 +161,7 @@ trait object 有一些很重要的限制：
 而不是泛型。
 
 带有 `Self: Sized` 的 `where` 语句可以用来把某个具体的方法从 trait object 
-里排除掉 (exclude) 。下面这个 trait 不是安全的 (object-safe) ，
+里排除掉 (exclude) 。下面这个 trait 不是安全的 ([object-safe]) ，
 因为具有泛型方法。
 
 ```rust,ignored
@@ -208,3 +208,5 @@ fn f() -> Box<dyn MyTrait> { /* 代码 */ }
 [`io::Read`]: https://doc.rust-lang.org/std/io/trait.Read.html
 [`io::Write`]: https://doc.rust-lang.org/std/io/trait.Write.html
 [`Iterator`]: https://doc.rust-lang.org/std/iter/trait.Iterator.html
+
+[object-safe]: https://doc.rust-lang.org/nightly/reference/items/traits.html#object-safety
