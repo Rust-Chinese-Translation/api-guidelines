@@ -143,12 +143,6 @@ pub fn my_transform<I: Iterator>(input: I) -> impl Iterator<Item = (usize, I::It
 也不要用另外语义的增加值。
 `derive` 属性里的每个 trait 都会展开成单独的、给这个泛型参数实现 trait 的 `impl` 块。
 
-
-Generic data structures should not use trait bounds that can be derived or do
-not otherwise add semantic value. Each trait in the `derive` attribute will be
-expanded into a separate `impl` block that only applies to generic arguments
-that implement that trait.
-
 ```rust,ignored
 // Prefer this:
 #[derive(Clone, Debug, PartialEq)]
