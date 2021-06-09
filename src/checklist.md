@@ -55,7 +55,7 @@
   - newtype 提供静态的区分功能 ([C-NEWTYPE])
   - 参数应使用类型来表明意图 ([C-CUSTOM-TYPE])
   - 用 `bitflags` 来存放一组标志 ([C-BITFLAG])
-  - 利用构造模式来构造复杂的值 ([C-BUILDER])
+  - 利用构造模式构造复杂的值 ([C-BUILDER])
 - **可依赖** ( *crate 不太可能出错* )
   - 函数会验证其参数 ([C-VALIDATE])
   - 析构函数不该运行失败 ([C-DTOR-FAIL])

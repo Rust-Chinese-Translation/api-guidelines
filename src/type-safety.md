@@ -130,7 +130,7 @@ fn main() {
 
 
 <a id="c-builder"></a>
-## 利用构造模式来构造复杂的值 
+## 利用构造模式构造复杂的值 
 
 > Builders enable construction of complex values (C-BUILDER)
 

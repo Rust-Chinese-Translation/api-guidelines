@@ -37,7 +37,7 @@
         background: var(--sidebar-bg);
         color: var(--sidebar-active);
         font-weight: bold;
-        font-size: var(--pagetoc-fontsize)+1px;
+        font-size: var(--pagetoc-fontsize);
         /* color: var(--sidebar-fg); */
     }
     .pagetoc .active {
