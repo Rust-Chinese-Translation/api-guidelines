@@ -114,17 +114,18 @@ Rust 的 trait 系统坚持 [孤儿原则][orphan] ：大致说的是，
 
 这两个是界限分明的例子：\
 [`LinkedHashMap`] 和 [`IpAddr`] 是数据结构，
-从 JSON 中读取 `LinkedHashMap` 和 `IpAddr` ，
-或者通过 IPC 发送其中一种数据到另一个进程 都显然十分不合理。\
+从 JSON 中读取 `LinkedHashMap` / `IpAddr` ，
+或者通过 IPC 发送其中一种数据到另一个进程 都十分合理。\
 [`LittleEndian`] 不是数据结构，它在 `byteorder` crate 中被用来编译期优化字节，
 尤其是字节的顺序，而且实际上 `LittleEndian` 永远不存在于运行时。
 
-而 #rust 和 #serde IRC 通信就是很让界限模糊的时候得到良好的处理。
-出于某些原因，某个 crate 不再依赖 Serde ，那么它或许想让与 Serde 相关的
-impls 块由 Cargo cfg 来关闭。从而下游的库只在需要这些 Serde impls 的时候编译 Serde 。
+而 #rust 和 #serde IRC 通信就是很让这种界限模糊的情况得到良好的处理。
+如果某个 crate 因为某些原因还没有把 Serde 作为依赖，那么它可能希望把 Serde 相关的
+impls 块放在 Cargo cfg 后面用作条件编译。从而下游的库需要这些 Serde impls 的时候，
+就编译 Serde ，不需要的时候不编译 Serde 。
+
 为了和其他基于 Serde 的库一致，Cargo cfg 的名称应该是简单的 `"serde"` ，
 而不要使用 `"serde_impls"` 或  `"serde_serialization"` 当作名称。
-
 
 [`LinkedHashMap`]: https://docs.rs/linked-hash-map/0.4.2/linked_hash_map/struct.LinkedHashMap.html
 [`IpAddr`]: https://doc.rust-lang.org/std/net/enum.IpAddr.html
