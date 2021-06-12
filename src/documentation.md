@@ -108,7 +108,7 @@ code;
 ```
 
 引发 panic 的条件应该在 "Panics" 标题下说明。
-这也适用于 trait 方法 —— 可以或者可能导致 panic 的方法都应该在 "Errors" 小节进行说明。
+这也适用于 trait 方法 —— 可以或者可能导致 panic 的方法都应该在 "Panics" 小节进行说明。
 
 标准库里的 [`Vec::insert`] 方法可能会 panic ：
 

@@ -141,11 +141,11 @@ fn g() {
 
 
 <a id="c-macro-vis"></a>
-## 生成条目的宏应支持可视分类符 
+## 生成条目的宏应支持可见性分类符 
 
 > Item macros support visibility specifiers (C-MACRO-VIS)
 
-宏应遵循 Rust 对条目可视化 ([visibility]) 的语法要求：
+宏应遵循 Rust 对条目可见性 ([visibility]) 的语法要求：
 默认是私有的，如果使用 `pub` 则表明条目是公有的。
 
 [visibility]:https://doc.rust-lang.org/nightly/reference/visibility-and-privacy.html

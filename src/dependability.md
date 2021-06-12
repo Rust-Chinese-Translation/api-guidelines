@@ -83,6 +83,6 @@ fn foo(a: u8) { /* ... */ }
 同样，析构函数不应该调用造成阻塞的操作，
 阻塞会让调试更困难。
 
-重申一遍，考虑提供单独的方法来为意外做万无一失而畅通无阻的准备。
+重申一遍，考虑为不会失败且非阻塞的析构提供单独的方法。
 
 [destructor]: https://doc.rust-lang.org/nightly/reference/destructors.html

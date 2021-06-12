@@ -25,7 +25,7 @@
   - 输入语法与输出语法一致 ([C-EVOCATIVE])
   - 宏与属性形成有机的整体 ([C-MACRO-ATTR])
   - 生成条目的宏可以在条目被允许的地方使用 ([C-ANYWHERE])
-  - 生成条目的宏应支持可视分类符 ([C-MACRO-VIS])
+  - 生成条目的宏应支持可见性分类符 ([C-MACRO-VIS])
   - 类型分类符 `$t:ty` 是灵活的 ([C-MACRO-TY])
 - **文档编写** ( *crate 有丰富的文档说明* )
   - crate 级别的文档应该详实有例 ([C-CRATE-DOC])

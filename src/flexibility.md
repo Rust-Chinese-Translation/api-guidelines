@@ -189,7 +189,7 @@ fn f() -> Box<dyn MyTrait> { /* 代码 */ }
 
 ### trait objects 的优点
 
-* **异质性**：当你需要 trait object 的时候，不一定真的需要它。
+* **异质性**：当你需要 trait object 的时候，的确真的需要它。
 * **代码体积小**：不像泛型， trait objects 不生成处理过的代码（单态化），
   所以能很大程度减少代码体积。
 

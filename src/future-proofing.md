@@ -141,7 +141,7 @@ pub fn my_transform<I: Iterator>(input: I) -> impl Iterator<Item = (usize, I::It
 从 `derive` 属性获得 traits 时，
 泛型数据结构不应该使用 trait bounds 再次获取 trait ，
 也不要用另外语义的增加值。
-`derive` 属性里的每个 trait 都会展开成单独的、给这个泛型参数实现 trait 的 `impl` 块。
+`derive` 属性里的每个 trait 都只对实现了此 trait 的泛型参数展开成单独的 `impl` 块。
 
 ```rust,ignored
 // Prefer this:
