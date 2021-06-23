@@ -4,21 +4,16 @@
 :root {
     --sidebar-width: 140px;
     --page-padding: 15px;
-    /* --content-max-width: 3050px; */
     --content-max-width: 82%;
-    /* --content-min-width: 1000px; */
     --menu-bar-height: 40px;
-    /* added pagetoc setting */
-    /* --pagetoc-width: 300px; */
     --pagetoc-width: 13%;
     --pagetoc-fontsize: 14.5px;
 }
 
-
 @media only screen and (max-width:1439px) {
-    :root{
-        --content-max-width: 98%;
-    }
+ :root{
+    --content-max-width: 98%;
+  }
 }
 
 /* Themes */

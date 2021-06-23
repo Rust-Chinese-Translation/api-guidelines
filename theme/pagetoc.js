@@ -1,3 +1,5 @@
+// src: https://github.com/JorelAli/mdBook-pagetoc
+
 // Un-active everything when you click it
 Array.prototype.forEach.call(document.getElementsByClassName("pagetoc")[0].children, function(el, i) {
     el.addEventHandler("click", function() {
