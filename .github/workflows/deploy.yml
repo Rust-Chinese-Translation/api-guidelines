@@ -16,6 +16,16 @@ jobs:
         with:
           mdbook-version: 'latest'
 
+      - name: Setup mdbook-theme latest
+        run: |
+          curl -s https://api.github.com/repos/zjp-CN/mdbook-theme/releases/latest \
+               | grep browser_download_url \
+               | grep mdbook-theme_linux \
+               | cut -d '"' -f 4 \
+               | wget -qi -
+          tar -xvzf mdbook-theme_linux.tar.gz
+          echo $PWD >> $GITHUB_PATH
+
       - run: mdbook build
 
       - name: Deploy
