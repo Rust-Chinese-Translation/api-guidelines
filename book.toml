@@ -3,17 +3,26 @@ title = "Rust API Guidelines（Rust API 编写指南）"
 description = "关于如何设计和呈现 Rust APIs 的一些建议"
 language = "zh"
 
+[preprocessor.theme]
+pagetoc = true
+root-font-size = "75%"
+
 [output.html]
 git-repository-url = "https://github.com/zjp-CN/api-guidelines"
-additional-css = ["theme/style.css"]
-additional-js = ["theme/sidebar.js"]
+additional-css = ["theme/pagetoc.css"] 
+additional-js = ["theme/pagetoc.js"] 
 
 [output.html.fold]
 enable = true
 level = 0
 
 [output.html.playground]
-editable = false
+editable = true
 
 [output.html.print]
 enable = false
+
+[output.theme-ace]
+theme-white = "github"
+theme-dark = "solarized_dark"
+below-build-dir = true 

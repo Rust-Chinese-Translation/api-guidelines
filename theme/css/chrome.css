@@ -13,11 +13,9 @@ html {
 }
 #searchresults a,
 .content a:link,
-.content a:visited,
-.content a > .hljs {
-    /* color: var(--fg); */
+a:visited,
+a > .hljs {
     color: var(--links);
-    font-weight: normal;
 }
 
 /* Menu Bar */
@@ -137,8 +135,8 @@ html {
     top: 0;
     bottom: 0;
     margin: 0;
-    max-width: 50px;
-    min-width: 20px;
+    max-width: auto;
+    min-width: auto;
 
     display: flex;
     justify-content: center;
@@ -197,7 +195,6 @@ html {
 
 :not(pre):not(a) > .hljs {
     color: var(--inline-code-color);
-    /* background: #FFFBF6; */
     overflow-x: initial;
 }
 
@@ -382,7 +379,7 @@ ul#searchresults span.teaser em {
 .chapter {
     list-style: none outside none;
     padding-left: 0;
-    line-height: 2.em;
+    line-height: 2em;
 }
 
 .chapter ol {
