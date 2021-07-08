@@ -2,12 +2,66 @@
 /* Globals */
 
 :root {
-    --sidebar-width: 140px;
+    --sidebar-width: 120px;
     --page-padding: 15px;
-    --content-max-width: 82%;
+    --content-max-width: 80%;
     --menu-bar-height: 40px;
-    --pagetoc-width: 13%;
+    --pagetoc-width: 15%;
     --pagetoc-fontsize: 14.5px;
+}
+
+@media only screen and (max-width:1439px) {
+ :root{
+    --content-max-width: 98%;
+  }
+}
+
+@media only screen and (max-width:1439px) {
+ :root{
+    --content-max-width: 98%;
+  }
+}
+
+@media only screen and (max-width:1439px) {
+ :root{
+    --content-max-width: 98%;
+  }
+}
+
+@media only screen and (max-width:1439px) {
+ :root{
+    --content-max-width: 98%;
+  }
+}
+
+@media only screen and (max-width:1439px) {
+ :root{
+    --content-max-width: 98%;
+  }
+}
+
+@media only screen and (max-width:1439px) {
+ :root{
+    --content-max-width: 98%;
+  }
+}
+
+@media only screen and (max-width:1439px) {
+ :root{
+    --content-max-width: 98%;
+  }
+}
+
+@media only screen and (max-width:1439px) {
+ :root{
+    --content-max-width: 98%;
+  }
+}
+
+@media only screen and (max-width:1439px) {
+ :root{
+    --content-max-width: 98%;
+  }
 }
 
 @media only screen and (max-width:1439px) {

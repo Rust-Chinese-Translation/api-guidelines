@@ -24,7 +24,9 @@
     }
     .pagetoc a {
         border-left: 1px solid var(--sidebar-bg);
-        color: var(--fg);
+        /* color: var(--fg); */
+        /* color: var(--sidebar-fg); */
+        color: var(--links);
         display: block;
         padding-bottom: 5px;
         padding-top: 5px;
@@ -32,6 +34,7 @@
         text-align: left;
         text-decoration: none;
         font-weight: normal;
+        background: var(--sidebar-bg);
     }
     .pagetoc a:hover,
     .pagetoc a.active {
@@ -40,9 +43,5 @@
         color: var(--sidebar-active);
         font-weight: bold;
         font-size: var(--pagetoc-fontsize);
-    }
-    .pagetoc .active {
-        background: var(--sidebar-bg);
-        color: var(--sidebar-fg);
     }
 }

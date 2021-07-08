@@ -5,7 +5,10 @@ language = "zh"
 
 [preprocessor.theme]
 pagetoc = true
-root-font-size = "75%"
+root-font-size = "70%"
+sidebar-width = "120px"
+pagetoc-width = "15%"
+content-max-width = "80%"
 
 [output.html]
 git-repository-url = "https://github.com/zjp-CN/api-guidelines"
