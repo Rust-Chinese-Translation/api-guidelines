@@ -5,6 +5,7 @@ language = "zh"
 
 [preprocessor.theme]
 pagetoc = true
+turn-off = true
 root-font-size = "70%"
 sidebar-width = "120px"
 pagetoc-width = "15%"

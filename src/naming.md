@@ -64,11 +64,11 @@ Crate 的名称不应该使用 `-rs` 或者 `-rust` 作为后缀或者前缀。
 
 应该使用带有以下前缀名称方法来进行特定类型转换：
 
-| 名称前缀 | 内存代价 | 所有权 |
-| ------ | ---- | --------- |
-| `as_` | 无代价 | borrowed -\> borrowed |
-| `to_` | 代价昂贵 | borrowed -\> borrowed<br>borrowed -\> owned (非 Copy 类型)<br>owned -\> owned (Copy 类型) |
-| `into_` | 变量名 | owned -\> owned (非 Copy 类型) |
+| 名称前缀 | 内存代价   | 所有权                                                                                    |
+| ------   | ----       | ---------                                                                                 |
+| `as_`    | 无代价     | borrowed -\> borrowed                                                                     |
+| `to_`    | 代价昂贵   | borrowed -\> borrowed<br>borrowed -\> owned (非 Copy 类型)<br>owned -\> owned (Copy 类型) |
+| `into_`  | 视情况而定 | owned -\> owned (非 Copy 类型)                                                            |
 
 例如：
 
