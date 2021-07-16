@@ -1,0 +1,513 @@
+<!DOCTYPE HTML>
+<html lang="zh" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>互通互用 - Rust API Guidelines（Rust API 编写指南）</title>
+                
+
+        <!-- Custom HTML head -->
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="关于如何设计和呈现 Rust APIs 的一些建议">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+                <link rel="stylesheet" href="theme/pagetoc.css">
+        
+            </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="about.html">关于本书</a></li><li class="chapter-item affix "><a href="checklist.html">一览表</a></li><li class="chapter-item "><a href="naming.html"><strong aria-hidden="true">1.</strong> 命名</a></li><li class="chapter-item expanded "><a href="interoperability.html" class="active"><strong aria-hidden="true">2.</strong> 互通互用</a></li><li class="chapter-item "><a href="macros.html"><strong aria-hidden="true">3.</strong> 宏</a></li><li class="chapter-item "><a href="documentation.html"><strong aria-hidden="true">4.</strong> 文档编写</a></li><li class="chapter-item "><a href="predictability.html"><strong aria-hidden="true">5.</strong> 可预测</a></li><li class="chapter-item "><a href="flexibility.html"><strong aria-hidden="true">6.</strong> 灵活性</a></li><li class="chapter-item "><a href="type-safety.html"><strong aria-hidden="true">7.</strong> 类型安全</a></li><li class="chapter-item "><a href="dependability.html"><strong aria-hidden="true">8.</strong> 可依赖</a></li><li class="chapter-item "><a href="debuggability.html"><strong aria-hidden="true">9.</strong> 可调试</a></li><li class="chapter-item "><a href="future-proofing.html"><strong aria-hidden="true">10.</strong> 前瞻性</a></li><li class="chapter-item "><a href="necessities.html"><strong aria-hidden="true">11.</strong> 必要项</a></li><li class="chapter-item affix "><a href="external-links.html">拓展阅读</a></li></ol>            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
+
+                    <h1 class="menu-title">Rust API Guidelines（Rust API 编写指南）</h1>
+
+                    <div class="right-buttons">
+                                                                        <a href="https://github.com/zjp-CN/api-guidelines" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                                                
+                    </div>
+                </div>
+
+                                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <h1 id="互通互用"><a class="header" href="#互通互用">互通互用</a></h1>
+<p><a id="c-common-traits"></a></p>
+<h2 id="类型应尽早实现常见的-traits"><a class="header" href="#类型应尽早实现常见的-traits">类型应尽早实现常见的 traits</a></h2>
+<blockquote>
+<p>Types eagerly implement common traits (C-COMMON-TRAITS)</p>
+</blockquote>
+<p>Rust 的 trait 系统坚持 <a href="https://doc.rust-lang.org/book/ch10-02-traits.html?highlight=orphan#implementing-a-trait-on-a-type">孤儿原则</a> ：大致说的是，
+每个 <code>impl</code> 块必须</p>
+<ol>
+<li>要么存在于定义 trait 的 crate 中，</li>
+<li>要么存在于给类型实现 trait 的 crate 中。</li>
+</ol>
+<p>所以，定义新类型的 crates 应该尽早实现所有合适的、常见的 traits 。</p>
+<p>为什么呢？想想下面的情况：</p>
+<ul>
+<li><code>std</code> crate 定义了 <code>Display</code> trait 。</li>
+<li><code>url</code> crate 定义了 <code>Url</code> 类型，该类型没有实现 <code>Display</code> trait 。</li>
+<li><code>webapp</code> crate 导入 <code>std</code> 和 <code>url</code> crate ，</li>
+</ul>
+<p>然而，没法在 <code>webapp</code> crate 中给 <code>Url</code> 增加 <code>Display</code> trait，
+因为类型和 trait 都不在 <code>webapp</code> 中定义。<br />
+（注意：<a href="https://doc.rust-lang.org/book/ch19-03-advanced-traits.html?highlight=orphan#using-the-newtype-pattern-to-implement-external-traits-on-external-types">newtype</a> 模式可以提供一个高效但不太方便的替代办法。）</p>
+<p><code>std</code> 中可给类型实现的、最重要的、常见的 traits 有：</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/marker/trait.Copy.html"><code>Copy</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/clone/trait.Clone.html"><code>Clone</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/cmp/trait.Eq.html"><code>Eq</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/cmp/trait.PartialEq.html"><code>PartialEq</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/cmp/trait.Ord.html"><code>Ord</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/cmp/trait.PartialOrd.html"><code>PartialOrd</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/hash/trait.Hash.html"><code>Hash</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/fmt/trait.Debug.html"><code>Debug</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/fmt/trait.Display.html"><code>Display</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/default/trait.Default.html"><code>Default</code></a></li>
+</ul>
+<p>给类型实现 <code>Default</code> trait 和空的 <code>new</code> 构造函数是常见和有必要的。<br />
+<code>new</code> 是 Rust 中常规的构造函数，所以不使用参数来构造基本的类型时，
+<code>new</code> 对使用者来说就理应存在。<br />
+<code>default</code> 方法功能上与 <code>new</code> 方法一致，所以也应当存在。</p>
+<p><a id="c-conv-traits"></a></p>
+<h2 id="使用-from-asref-asmut-trait-来转换类型"><a class="header" href="#使用-from-asref-asmut-trait-来转换类型">使用 <code>From</code>, <code>AsRef</code>, <code>AsMut</code> trait 来转换类型</a></h2>
+<blockquote>
+<p>Conversions use the standard traits <code>From</code>, <code>AsRef</code>, <code>AsMut</code> (C-CONV-TRAITS)</p>
+</blockquote>
+<p>以下转换类型的 traits 在合理的时候 <strong>应该</strong> 被实现：</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/convert/trait.From.html"><code>From</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/convert/trait.TryFrom.html"><code>TryFrom</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/convert/trait.AsRef.html"><code>AsRef</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/convert/trait.AsMut.html"><code>AsMut</code></a></li>
+</ul>
+<p>以下转换类型的 traits 在任何时候都 <strong>不应该</strong> 被实现：</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/convert/trait.Into.html"><code>Into</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/convert/trait.TryInto.html"><code>TryInto</code></a></li>
+</ul>
+<p>因为这两个 traits 基于 <code>From</code> 、 <code>TryFrom</code> trait 进行覆盖实现 (blanket impl) ，
+所以只需要实现 <code>From</code> 、 <code>TryFrom</code> 。</p>
+<p>来自标准库的例子：</p>
+<ul>
+<li><code>u32</code> 实现了 <code>From&lt;u16&gt;</code> ，因为更小范围的整数总是可以转化为更大范围的整数。</li>
+<li><code>u16</code> 没有实现 <code>From&lt;u32&gt;</code> ，因为如果超过 <code>u16</code> 范围的整数不可能转化为 <code>u16</code> 。</li>
+<li><code>u16</code> 实现了 <code>TryFrom&lt;u32&gt;</code> ，如果整数大于 <code>u16</code> 的范围，那么返回错误。</li>
+<li><a href="https://doc.rust-lang.org/std/net/enum.IpAddr.html"><code>IpAddr</code></a> 实现了 <a href="https://doc.rust-lang.org/std/net/struct.Ipv6Addr.html"><code>From&lt;Ipv6Addr&gt;</code></a> ，<a href="https://doc.rust-lang.org/std/net/enum.IpAddr.html"><code>IpAddr</code></a> 能够以 v4 和 v6 两种 IP 地址表示。</li>
+</ul>
+<p><a id="c-collect"></a></p>
+<h2 id="给集合实现-fromiterator-和-extend-trait"><a class="header" href="#给集合实现-fromiterator-和-extend-trait">给集合实现 <code>FromIterator</code> 和 <code>Extend</code> trait</a></h2>
+<blockquote>
+<p>Collections implement <code>FromIterator</code> and <code>Extend</code> (C-COLLECT)</p>
+</blockquote>
+<p><a href="https://doc.rust-lang.org/std/iter/trait.FromIterator.html"><code>FromIterator</code></a> 和 <a href="https://doc.rust-lang.org/std/iter/trait.Extend.html"><code>Extend</code></a> trait 让集合 (collections) 方便地使用以下迭代器方法：</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.collect"><code>Iterator::collect</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.partition"><code>Iterator::partition</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/iter/trait.Iterator.html#method.unzip"><code>Iterator::unzip</code></a></li>
+</ul>
+<p><code>FromIterator</code> 从迭代器中生成新的集合，
+<code>Extend</code> 从迭代器中追加元素到已存在的集合。</p>
+<p>来自标准库的例子：</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/vec/struct.Vec.html"><code>Vec&lt;T&gt;</code></a> 实现了 <code>FromIterator&lt;T&gt;</code> 和 <code>Extend&lt;T&gt;</code> 。</li>
+</ul>
+<p><a id="c-serde"></a></p>
+<h2 id="给数据结构实现-serde-的-serialize-和-deserialize-trait"><a class="header" href="#给数据结构实现-serde-的-serialize-和-deserialize-trait">给数据结构实现 Serde 的 <code>Serialize</code> 和 <code>Deserialize</code> trait</a></h2>
+<blockquote>
+<p>Data structures implement Serde's <code>Serialize</code>, <code>Deserialize</code> (C-SERDE)</p>
+</blockquote>
+<p>具有数据结构功能的类型应该实现 <code>Serialize</code> 和 <code>Deserialize</code> trait 。</p>
+<p>对于数据结构 (data structure) ，界定显然是和显然不是 <strong>之间</strong> 的类型是很困难的。</p>
+<p>这两个是界限分明的例子：<br />
+<a href="https://docs.rs/linked-hash-map/0.4.2/linked_hash_map/struct.LinkedHashMap.html"><code>LinkedHashMap</code></a> 和 <a href="https://doc.rust-lang.org/std/net/enum.IpAddr.html"><code>IpAddr</code></a> 是数据结构，
+从 JSON 中读取 <code>LinkedHashMap</code> / <code>IpAddr</code> ，
+或者通过 IPC 发送其中一种数据到另一个进程 都十分合理。<br />
+<a href="https://docs.rs/byteorder/1.0.0/byteorder/enum.LittleEndian.html"><code>LittleEndian</code></a> 不是数据结构，它在 <code>byteorder</code> crate 中被用来编译期优化字节，
+尤其是字节的顺序，而且实际上 <code>LittleEndian</code> 永远不存在于运行时。</p>
+<p>而 #rust 和 #serde IRC 通信就是很让这种界限模糊的情况得到良好的处理。
+如果某个 crate 因为某些原因还没有把 Serde 作为依赖，那么它可能希望把 Serde 相关的
+impls 块放在 Cargo cfg 后面用作条件编译。从而下游的库需要这些 Serde impls 的时候，
+就编译 Serde ，不需要的时候不编译 Serde 。</p>
+<p>为了和其他基于 Serde 的库一致，Cargo cfg 的名称应该是简单的 <code>&quot;serde&quot;</code> ，
+而不要使用 <code>&quot;serde_impls&quot;</code> 或  <code>&quot;serde_serialization&quot;</code> 当作名称。</p>
+<p>不使用 derive 参数的话，通常实现方式如下：</p>
+<pre><code class="language-toml">[dependencies]
+serde = { version = &quot;1.0&quot;, optional = true }
+</code></pre>
+<pre><code class="language-rust ignored">#[cfg(feature = &quot;serde&quot;)]
+extern crate serde;
+
+struct T { /* ... */ }
+
+#[cfg(feature = &quot;serde&quot;)]
+impl Serialize for T { /* ... */ }
+
+#[cfg(feature = &quot;serde&quot;)]
+impl&lt;'de&gt; Deserialize&lt;'de&gt; for T { /* ... */ }
+</code></pre>
+<p>使用 derive 参数的话，实现方式为：</p>
+<pre><code class="language-toml">[dependencies]
+serde = { version = &quot;1.0&quot;, optional = true, features = [&quot;derive&quot;] }
+</code></pre>
+<pre><code class="language-rust ignored">#[cfg(feature = &quot;serde&quot;)]
+#[macro_use]
+extern crate serde;
+
+#[cfg_attr(feature = &quot;serde&quot;, derive(Serialize, Deserialize))]
+struct T { /* ... */ }
+</code></pre>
+<p><a id="c-send-sync"></a></p>
+<h2 id="类型应尽可能实现-send-和-sync-trait"><a class="header" href="#类型应尽可能实现-send-和-sync-trait">类型应尽可能实现 <code>Send</code> 和 <code>Sync</code> trait</a></h2>
+<blockquote>
+<p>Types are <code>Send</code> and <code>Sync</code> where possible (C-SEND-SYNC)</p>
+</blockquote>
+<p>在编译器确认类型适合实现 <code>Send</code> 和 <code>Sync</code> trait 的时候，它们是自动实现的。</p>
+<p>对于操纵裸指针 (raw pointers) 的类型，实现这两个 trait 就要十分谨慎，
+因为它们表明是线程安全的。<br />
+像下面的单元测试有助于察觉到是否因 <code>Send</code> 或 <code>Sync</code> 导致无意间的性能倒退。</p>
+<pre><code class="language-rust ignored">#[test]
+fn test_send() {
+    fn assert_send&lt;T: Send&gt;() {}
+    assert_send::&lt;MyStrangeType&gt;();
+}
+
+#[test]
+fn test_sync() {
+    fn assert_sync&lt;T: Sync&gt;() {}
+    assert_sync::&lt;MyStrangeType&gt;();
+}
+</code></pre>
+<p><a id="c-good-err"></a></p>
+<h2 id="error-类型-十分直观和有用"><a class="header" href="#error-类型-十分直观和有用">Error 类型 十分直观和有用</a></h2>
+<blockquote>
+<p>Error types are meaningful and well-behaved (C-GOOD-ERR)</p>
+</blockquote>
+<p>Error 类型 是 <code>Result&lt;T, E&gt;</code> 中的 <code>E</code> 类型，在你的 crate 中
+<code>Result&lt;T, E&gt;</code> 是被公共 (public) 函数返回的。<br />
+Error 类型 总是应该实现 <a href="https://doc.rust-lang.org/std/error/trait.Error.html"><code>std::error::Error</code></a> trait ：<br />
+在错误处理库中用这个 trait 来对不同类型的错误进行抽象（比如 <a href="https://docs.rs/error-chain"><code>error-chain</code></a> crate ）；<br />
+也可以使用这个 trait 的 [<code>.source()</code>] 方法来得到更底层的错误。 </p>
+<p>此外，Error 类型 应该实现 <a href="https://doc.rust-lang.org/std/marker/trait.Send.html"><code>Send</code></a> 和 <a href="https://doc.rust-lang.org/std/marker/trait.Sync.html"><code>Sync</code></a> trait 。<br />
+不具备 <a href="https://doc.rust-lang.org/std/marker/trait.Send.html"><code>Send</code></a> 的 Error 类型 不能被 <a href="https://doc.rust-lang.org/std/thread/fn.spawn.html"><code>thread::spawn</code></a> 运行的线程返回；<br />
+不具备 <a href="https://doc.rust-lang.org/std/marker/trait.Sync.html"><code>Sync</code></a> 的 Error 类型 不能在不同的线程间使用 <a href="https://doc.rust-lang.org/std/sync/struct.Arc.html"><code>Arc</code></a> 来传递。<br />
+这些在多线程应用软件中处理基础错误时是常见且必须的。</p>
+<p><code>Send</code> 和 <code>Sync</code> 在使用 <a href="https://doc.rust-lang.org/std/io/struct.Error.html#method.new"><code>std::io::Error::new</code></a> 进行自定义 IO 错误时扮演了重要角色，
+因为这里传入的 Error 类型 需要实现 <code>Error + Send + Sync</code> trait 。</p>
+<p>在返回 Error trait 对象的函数里，需要对这条原则保持审慎。
+比如 <a href="https://docs.rs/reqwest/0.7.2/reqwest/struct.Error.html#method.get_ref"><code>reqwest::Error::get_ref</code></a> 函数。
+通常 <code>Error + Send + Sync + 'static</code> 组合适合对大多数调用场景。
+附加的 <code>'static</code> 能利用 <a href="https://doc.rust-lang.org/std/error/trait.Error.html#method.downcast_ref-2"><code>Error::downcast_ref</code></a> 方法来获取 Error trait 对象 。</p>
+<p>不要把 <code>()</code> 作为 Error 类型 ，即便对于一个不带有帮助性的额外信息的错误，
+也不要让这个错误是 <code>()</code> 类型 。</p>
+<ul>
+<li><code>()</code> 没有实现 <code>Error</code> ，所以它无法和 <code>error-chain</code> 这样的错误处理库一起使用。</li>
+<li><code>()</code> 没有实现 <code>Display</code> ，所以使用者无法打印自己写的错误信息。</li>
+<li><code>()</code> 实现了 <code>Debug</code> ，但是当使用者 <code>unwrap</code> 错误的时候，它没提供任何有用的东西。</li>
+<li>对于实现了 <code>From&lt;()&gt;</code> 的 Error 类型的下游库 ，<code>()</code> 在语义上是毫无意义的，
+从而无法使用 <code>?</code> 操作符。</li>
+</ul>
+<p>需要做的是，针对你的 crate 或者单个函数来定义有实际意义的 Error 类型 。
+给合适的 Error 类型 实现 <code>Error</code> 和 <code>Display</code> trait 。
+对于无实际意义的错误，利用 unit 结构体来实现 <code>Error</code> 和 <code>Display</code> trait 。</p>
+<pre><code class="language-rust ignored">use std::error::Error;
+use std::fmt::Display;
+
+// Instead of this...
+fn do_the_thing() -&gt; Result&lt;Wow, ()&gt;
+
+// Prefer this...
+fn do_the_thing() -&gt; Result&lt;Wow, DoError&gt;
+
+#[derive(Debug)]
+struct DoError;
+
+impl Display for DoError { /* ... */ }
+impl Error for DoError { /* ... */ }
+</code></pre>
+<p>Error 类型 实现的 <code>Display</code> trait 通常应该提供简明的错误信息 (error messages)，
+而且信息用全小写，末尾不带标点符号。<br />
+不应该实现 <a href="https://doc.rust-lang.org/std/error/trait.Error.html#tymethod.description"><code>Error::description()</code></a> trait ，因为它已经被弃用。
+而应该实现 <code>Display</code> trait 来打印错误<sup class="footnote-reference"><a href="#Display">1</a></sup>。</p>
+<p>来自标准库的例子：</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/str/struct.ParseBoolError.html"><code>ParseBoolError</code></a> ：从字符串解析 bool 值时返回这个错误。</li>
+</ul>
+<p>一些错误信息的例子：</p>
+<ul>
+<li>&quot;unexpected end of file&quot; </li>
+<li>&quot;provided string was not `true` or `false`&quot;</li>
+<li>&quot;invalid IP address syntax&quot;</li>
+<li>&quot;second time provided was later than self&quot;</li>
+<li>&quot;invalid UTF-8 sequence of {} bytes from index {}&quot;</li>
+<li>&quot;environment variable was not valid unicode: {:?}&quot;</li>
+</ul>
+<div class="footnote-definition" id="Display"><sup class="footnote-definition-label">1</sup>
+<p>译者注：
+<a href="https://doc.rust-lang.org/std/string/trait.ToString.html#tymethod.to_string"><code>ToString</code></a>
+给所有具有 <code>Display</code> trait 的类型自动实现了 <code>.to_string()</code> 方法，从而获得错误信息的字符串。
+<a id="c-num-fmt"></a></p>
+</div>
+<h2 id="二进制数类型应提供-hex-octal-binary-的格式化方式"><a class="header" href="#二进制数类型应提供-hex-octal-binary-的格式化方式">二进制数类型应提供 <code>Hex</code>, <code>Octal</code>, <code>Binary</code> 的格式化方式</a></h2>
+<blockquote>
+<p>Binary number types provide <code>Hex</code>, <code>Octal</code>, <code>Binary</code> formatting (C-NUM-FMT)</p>
+</blockquote>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/fmt/trait.UpperHex.html"><code>std::fmt::UpperHex</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/fmt/trait.LowerHex.html"><code>std::fmt::LowerHex</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/fmt/trait.Octal.html"><code>std::fmt::Octal</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/fmt/trait.Binary.html"><code>std::fmt::Binary</code></a></li>
+</ul>
+<p>这些 traits 在 <code>{:X}</code>, <code>{:x}</code>, <code>{:o}</code>, <code>{:b}</code> 格式化分类符 (format specifiers)
+下用来控制类型的呈现方式。</p>
+<p>对你认为会进行 位操作（比如 <code>|</code> 、  <code>&amp;</code>）的任何数字类型实现这些 traits ——
+尤其适合 位标志 (bitflag) 类型。
+像 <code>struct Nanoseconds(u64)</code> 这样的数值单位类型就可能无需实现这些 trait 。</p>
+<p><a id="c-rw-value"></a></p>
+<h2 id="readerwriter-泛型函数使用-r-read-和-w-write-参数传值"><a class="header" href="#readerwriter-泛型函数使用-r-read-和-w-write-参数传值">reader/writer 泛型函数使用 <code>R: Read</code> 和 <code>W: Write</code> 参数传值</a></h2>
+<blockquote>
+<p>Generic reader/writer functions take <code>R: Read</code> and <code>W: Write</code> by value (C-RW-VALUE)</p>
+</blockquote>
+<p>标准库里有以下两个 impl 块：</p>
+<pre><code class="language-rust ignored">impl&lt;'a, R: Read + ?Sized&gt; Read for &amp;'a mut R { /* ... */ }
+
+impl&lt;'a, W: Write + ?Sized&gt; Write for &amp;'a mut W { /* ... */ }
+</code></pre>
+<p>这意味着接收 <code>R: Read</code> 或者 <code>W: Write</code> 泛型参数值的 所有函数
+都可以在需要的时候传入 可变引用 (mut reference) 。</p>
+<p>在这些函数的文档里，需要简要地提醒使用者可以传入可变引用。
+Rust 新手经常对此感到疑惑。
+已经打开了文件，并且想从文件中读取数据的时候，新手往往卡在这一步。
+解决的办法是，根据上面两种情况的一种，传入 <code>&amp;mut f</code> ，
+而不是传入 <code>f</code> 作为参数。</p>
+<p>例子：</p>
+<ul>
+<li><a href="https://docs.rs/flate2/1.0.20/flate2/read/struct.GzDecoder.html#method.new"><code>flate2::read::GzDecoder::new</code></a></li>
+<li><a href="https://docs.rs/flate2/1.0.20/flate2/write/struct.GzEncoder.html#method.new"><code>flate2::write::GzEncoder::new</code></a></li>
+<li><a href="https://docs.serde.rs/serde_json/fn.from_reader.html"><code>serde_json::from_reader</code></a></li>
+<li><a href="https://docs.serde.rs/serde_json/fn.to_writer.html"><code>serde_json::to_writer</code></a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                                                    <a rel="prev" href="naming.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+                                                    <a rel="next" href="macros.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                    <a rel="prev" href="naming.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+                                    <a rel="next" href="macros.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                            </nav>
+
+        </div>
+
+        
+        
+        
+                <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+                <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="editor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mode-rust.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-dawn.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+        
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+                <script type="text/javascript" src="theme/pagetoc.js"></script>
+        
+        
+    </body>
+</html>

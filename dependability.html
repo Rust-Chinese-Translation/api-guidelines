@@ -1,0 +1,319 @@
+<!DOCTYPE HTML>
+<html lang="zh" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>可依赖 - Rust API Guidelines（Rust API 编写指南）</title>
+                
+
+        <!-- Custom HTML head -->
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="关于如何设计和呈现 Rust APIs 的一些建议">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+                <link rel="stylesheet" href="theme/pagetoc.css">
+        
+            </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="about.html">关于本书</a></li><li class="chapter-item affix "><a href="checklist.html">一览表</a></li><li class="chapter-item "><a href="naming.html"><strong aria-hidden="true">1.</strong> 命名</a></li><li class="chapter-item "><a href="interoperability.html"><strong aria-hidden="true">2.</strong> 互通互用</a></li><li class="chapter-item "><a href="macros.html"><strong aria-hidden="true">3.</strong> 宏</a></li><li class="chapter-item "><a href="documentation.html"><strong aria-hidden="true">4.</strong> 文档编写</a></li><li class="chapter-item "><a href="predictability.html"><strong aria-hidden="true">5.</strong> 可预测</a></li><li class="chapter-item "><a href="flexibility.html"><strong aria-hidden="true">6.</strong> 灵活性</a></li><li class="chapter-item "><a href="type-safety.html"><strong aria-hidden="true">7.</strong> 类型安全</a></li><li class="chapter-item expanded "><a href="dependability.html" class="active"><strong aria-hidden="true">8.</strong> 可依赖</a></li><li class="chapter-item "><a href="debuggability.html"><strong aria-hidden="true">9.</strong> 可调试</a></li><li class="chapter-item "><a href="future-proofing.html"><strong aria-hidden="true">10.</strong> 前瞻性</a></li><li class="chapter-item "><a href="necessities.html"><strong aria-hidden="true">11.</strong> 必要项</a></li><li class="chapter-item affix "><a href="external-links.html">拓展阅读</a></li></ol>            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
+
+                    <h1 class="menu-title">Rust API Guidelines（Rust API 编写指南）</h1>
+
+                    <div class="right-buttons">
+                                                                        <a href="https://github.com/zjp-CN/api-guidelines" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                                                
+                    </div>
+                </div>
+
+                                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <h1 id="可依赖"><a class="header" href="#可依赖">可依赖</a></h1>
+<p><a id="c-validate"></a></p>
+<h2 id="函数会验证其参数"><a class="header" href="#函数会验证其参数">函数会验证其参数</a></h2>
+<blockquote>
+<p>Functions validate their arguments (C-VALIDATE)</p>
+</blockquote>
+<p>Rust APIs 不遵循 <a href="http://en.wikipedia.org/wiki/Robustness_principle">稳健性法则</a>：
+对己方保守，对他方宽容。</p>
+<p>正相反， Rust 代码应该在任何可以 <strong>强制</strong> 校验其输入的时候进行强制校验。</p>
+<p>可以通过以下机制来实现强制验证。出现的顺序代表性能高低。</p>
+<h3 id="静态验证"><a class="header" href="#静态验证">静态验证</a></h3>
+<p>把输入限制在类型上，排除掉不符合的输入。
+比如，请这样写：</p>
+<pre><code class="language-rust ignored">fn foo(a: Ascii) { /* ... */ }
+</code></pre>
+<p>而不是这样写：</p>
+<pre><code class="language-rust ignored">fn foo(a: u8) { /* ... */ }
+</code></pre>
+<p><code>Ascii</code> 是对 <code>u8</code> 类型的包装器 (wrapper) ，从而保证最高位是零。
+参考 <a href="type-safety.html#c-newtype">newtype</a> 模式，来详细了解生成类型安全的包装器。</p>
+<p>静态验证 (static enforcement) 通常具有很少的运行时代价：
+它的代价在于边界，例如在 <code>u8</code> 首先转换为 <code>Ascii</code> 类型的时候。
+它也能在早期发现 bugs ，在编译期发现，而不是在运行失败的时候才发现。</p>
+<p>可是，有些性质很难或者不可能用类型来描述。</p>
+<h3 id="动态验证"><a class="header" href="#动态验证">动态验证</a></h3>
+<p>动态验证 (dynamic enforcement) 即 在处理的时候（如果有必要的话处理之前） 校验输入。
+动态检查通常比静态检查更容易实现，但是有以下几个缺点：</p>
+<ul>
+<li>运行时开销（除非动态检查是处理输入的一部分）</li>
+<li>bugs 检测不及时</li>
+<li>带来失败的情况，用户的代码需要通过 <code>panic!</code> ，或者 <code>Result</code> / <code>Option</code> 
+类型处理。</li>
+</ul>
+<ol>
+<li>
+<p>使用 <a href="http://129.28.186.100/rust-docs/rust/html/std/macro.debug_assert.html"><code>debug_assert!</code></a> 。
+在构建生产版本的时候可以关掉高花销的检查。</p>
+</li>
+<li>
+<p>增加不进行检查的同类函数。
+通常用 <code>_unchecked</code> 后缀来标记这个函数不进行某些检查，
+或者把函数放在 <code>raw</code> 的子模块下面。<br />
+在下面两个场景下使用 unchecked 函数是明智的：
+为了更高的性能；使用者确信输入的数据是有效的。</p>
+</li>
+</ol>
+<p><a id="c-dtor-fail"></a></p>
+<h2 id="析构函数不该运行失败"><a class="header" href="#析构函数不该运行失败">析构函数不该运行失败</a></h2>
+<blockquote>
+<p>Destructors never fail (C-DTOR-FAIL)</p>
+</blockquote>
+<p>析构函数 (destructor) 在某项任务失败的时候也会执行，
+如果析构函数运行失败的话程序就会中断且退出。</p>
+<p>所以为了不让析构函数失败，应该单独提供用于检查的方法。
+比如 <code>close</code> 方法就返回 <code>Result</code> 来表明遇到了问题。</p>
+<p><a id="c-dtor-block"></a></p>
+<h2 id="阻塞的析构函数应有替代的办法"><a class="header" href="#阻塞的析构函数应有替代的办法">阻塞的析构函数应有替代的办法</a></h2>
+<blockquote>
+<p>Destructors that may block have alternatives (C-DTOR-BLOCK)</p>
+</blockquote>
+<p>同样，析构函数不应该调用造成阻塞的操作，
+阻塞会让调试更困难。</p>
+<p>重申一遍，考虑为不会失败且非阻塞的析构提供单独的方法。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                                                    <a rel="prev" href="type-safety.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+                                                    <a rel="next" href="debuggability.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                    <a rel="prev" href="type-safety.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+                                    <a rel="next" href="debuggability.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                            </nav>
+
+        </div>
+
+        
+        
+        
+                <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+                <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="editor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mode-rust.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-dawn.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+        
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+                <script type="text/javascript" src="theme/pagetoc.js"></script>
+        
+        
+    </body>
+</html>

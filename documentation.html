@@ -1,0 +1,510 @@
+<!DOCTYPE HTML>
+<html lang="zh" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>文档编写 - Rust API Guidelines（Rust API 编写指南）</title>
+                
+
+        <!-- Custom HTML head -->
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="关于如何设计和呈现 Rust APIs 的一些建议">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+                <link rel="stylesheet" href="theme/pagetoc.css">
+        
+            </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="about.html">关于本书</a></li><li class="chapter-item affix "><a href="checklist.html">一览表</a></li><li class="chapter-item "><a href="naming.html"><strong aria-hidden="true">1.</strong> 命名</a></li><li class="chapter-item "><a href="interoperability.html"><strong aria-hidden="true">2.</strong> 互通互用</a></li><li class="chapter-item "><a href="macros.html"><strong aria-hidden="true">3.</strong> 宏</a></li><li class="chapter-item expanded "><a href="documentation.html" class="active"><strong aria-hidden="true">4.</strong> 文档编写</a></li><li class="chapter-item "><a href="predictability.html"><strong aria-hidden="true">5.</strong> 可预测</a></li><li class="chapter-item "><a href="flexibility.html"><strong aria-hidden="true">6.</strong> 灵活性</a></li><li class="chapter-item "><a href="type-safety.html"><strong aria-hidden="true">7.</strong> 类型安全</a></li><li class="chapter-item "><a href="dependability.html"><strong aria-hidden="true">8.</strong> 可依赖</a></li><li class="chapter-item "><a href="debuggability.html"><strong aria-hidden="true">9.</strong> 可调试</a></li><li class="chapter-item "><a href="future-proofing.html"><strong aria-hidden="true">10.</strong> 前瞻性</a></li><li class="chapter-item "><a href="necessities.html"><strong aria-hidden="true">11.</strong> 必要项</a></li><li class="chapter-item affix "><a href="external-links.html">拓展阅读</a></li></ol>            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
+
+                    <h1 class="menu-title">Rust API Guidelines（Rust API 编写指南）</h1>
+
+                    <div class="right-buttons">
+                                                                        <a href="https://github.com/zjp-CN/api-guidelines" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                                                
+                    </div>
+                </div>
+
+                                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <h1 id="文档编写"><a class="header" href="#文档编写">文档编写</a></h1>
+<p><a id="c-crate-doc"></a></p>
+<h2 id="crate-级别的文档应该详实有例"><a class="header" href="#crate-级别的文档应该详实有例">crate 级别的文档应该详实有例</a></h2>
+<blockquote>
+<p>Crate level docs are thorough and include examples (C-CRATE-DOC)</p>
+</blockquote>
+<p>参考 <a href="https://github.com/rust-lang/rfcs/pull/1687">RFC 1687</a> 。</p>
+<p><a id="c-example"></a></p>
+<h2 id="每个条目都应该有例子"><a class="header" href="#每个条目都应该有例子">每个条目都应该有例子</a></h2>
+<blockquote>
+<p>All items have a rustdoc example (C-EXAMPLE)</p>
+</blockquote>
+<p>每个公有的 模块、 trait 、结构体、枚举体、函数、方法、宏、类型定义 ，
+都应该有展示其功能和使用方法的例子。</p>
+<p>这条原则应该在合理的地方使用。</p>
+<p>以链接的形式关联另一个条目的使用例子可能就足够了。
+比如一个函数用到一个具体的类型，合适的做法是：
+给这个函数或者类型写一个例子，然后链接这个例子到另一个。</p>
+<p>写例子的目的不一定仅仅是展示 <strong>如何使用</strong> 这个条目。
+阅读它的人可以理解怎样调用函数、匹配枚举体 和 其他基础的用法。
+但更多时候，例子通常用来展示 <strong>为什么</strong> 使用者愿意去使用这个条目。</p>
+<pre><code class="language-rust ignored">// 这就是一个关于 `.clone()` 的不好的例子。
+// 它死板地展示如何调用 clone() ，而完全没有表明 *为什么* 需要这样做。
+fn main() {
+    let hello = &quot;hello&quot;;
+
+    hello.clone();
+}
+</code></pre>
+<p><a id="c-question-mark"></a></p>
+<h2 id="例子应该使用--而不使用-try-或者-unwrap"><a class="header" href="#例子应该使用--而不使用-try-或者-unwrap">例子应该使用 <code>?</code> 而不使用 <code>try!</code> 或者 <code>unwrap</code></a></h2>
+<blockquote>
+<p>Examples use <code>?</code>, not <code>try!</code>, not <code>unwrap</code> (C-QUESTION-MARK)</p>
+</blockquote>
+<p>不管你喜不喜欢这样做，例子里的代码通常会被使用者一字不落地复制下来。
+使用者应该慎重地决定怎样处理每个错误。</p>
+<p>一个容易出错的代码示例通常是按照下面的方式来写：
+由 <code>cargo test</code> 编译测试代码块，</p>
+<pre><code>/// ```rust
+/// # use std::error::Error;
+/// #
+/// # fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+/// your;
+/// example?;
+/// code;
+/// #
+/// # Ok(())
+/// # }
+/// ```
+</code></pre>
+<p>但以 <code>#</code> 开头的每行代码不会出现在读者可见的 rustdoc 里。</p>
+<pre><code class="language-rust ignored"><span class="boring">use std::error::Error;
+</span><span class="boring">
+</span><span class="boring">fn main() -&gt; Result&lt;(), Box&lt;dyn Error&gt;&gt; {
+</span>your;
+example?;
+code;
+<span class="boring">
+</span><span class="boring">Ok(())
+</span><span class="boring">}
+</span></code></pre>
+<p><a id="c-failure"></a></p>
+<h2 id="函数涉及错误-panic安全性时-应该加以说明"><a class="header" href="#函数涉及错误-panic安全性时-应该加以说明">函数涉及错误、 panic、安全性时 应该加以说明</a></h2>
+<blockquote>
+<p>Function docs include error, panic, and safety considerations (C-FAILURE)</p>
+</blockquote>
+<p>引发错误的条件应该在 &quot;Errors&quot; 标题下说明。
+这也适用于 trait 方法 —— 可以或者可能返回错误的方法都应该在 &quot;Errors&quot; 小节进行说明。</p>
+<p>比如以下标准库里的例子，
+<a href="https://doc.rust-lang.org/std/io/trait.Read.html#tymethod.read"><code>std::io::Read::read</code></a> trait 里某个方法可能会返回一个错误。</p>
+<pre><code>/// Pull some bytes from this source into the specified buffer, returning
+/// how many bytes were read.
+///
+/// ... lots more info ...
+///
+/// # Errors
+///
+/// If this function encounters any form of I/O or other error, an error
+/// variant will be returned. If an error is returned then it must be
+/// guaranteed that no bytes were read.
+</code></pre>
+<p>引发 panic 的条件应该在 &quot;Panics&quot; 标题下说明。
+这也适用于 trait 方法 —— 可以或者可能导致 panic 的方法都应该在 &quot;Panics&quot; 小节进行说明。</p>
+<p>标准库里的 <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.insert"><code>Vec::insert</code></a> 方法可能会 panic ：</p>
+<pre><code>/// Inserts an element at position `index` within the vector, shifting all
+/// elements after it to the right.
+///
+/// # Panics
+///
+/// Panics if `index` is out of bounds.
+</code></pre>
+<p>没必要把所有可能想到的 panic 情况都进行说明，
+尤其是如果 panic 发生在调用期间有逻辑错误的时候。
+以如下的方式说明 <code>Display</code> 会 panic 就显得多余了。</p>
+<pre><code class="language-rust ignored">/// # Panics
+///
+/// This function panics if `T`'s implementation of `Display` panics.
+pub fn print&lt;T: Display&gt;(t: T) {
+    println!(&quot;{}&quot;, t.to_string());
+}
+</code></pre>
+<p>unsafe 的函数应该放在 &quot;Safety&quot; 小节，用来解释如何正确使用这个函数。</p>
+<p>例如，不安全的 <a href="https://doc.rust-lang.org/std/ptr/fn.read.html"><code>std::ptr::read</code></a> 方法必须在以下情况才能被调用：</p>
+<pre><code>/// Reads the value from `src` without moving it. This leaves the
+/// memory in `src` unchanged.
+///
+/// # Safety
+///
+/// Beyond accepting a raw pointer, this is unsafe because it semantically
+/// moves the value out of `src` without preventing further usage of `src`.
+/// If `T` is not `Copy`, then care must be taken to ensure that the value at
+/// `src` is not used before the data is overwritten again (e.g. with `write`,
+/// `zero_memory`, or `copy_memory`). Note that `*src = foo` counts as a use
+/// because it will attempt to drop the value previously at `*src`.
+///
+/// The pointer must be aligned; use `read_unaligned` if that is not the case.
+</code></pre>
+<p><a id="c-link"></a></p>
+<h2 id="给相关的内容添加超链接"><a class="header" href="#给相关的内容添加超链接">给相关的内容添加超链接</a></h2>
+<blockquote>
+<p>Prose contains hyperlinks to relevant things (C-LINK)</p>
+</blockquote>
+<p>一般使用 markdown 超链接语法 <code>[text](url)</code> 来设置超链接。
+链接到某个类型则可以使用 <code>[`text`]</code> 语法来标注，
+在 docstring 底部另起一行，使用 <code>[`text`]: &lt;target&gt;</code> 来添加链接地址，
+下面谈谈这里的 <code>&lt;target&gt;</code> 。</p>
+<p>通常这样做来链接到这个类型的方法：</p>
+<pre><code class="language-md">[`serialize_struct`]: #method.serialize_struct
+</code></pre>
+<p>通常这样做来链接到其他类型：</p>
+<pre><code class="language-md">[`Deserialize`]: trait.Deserialize.html
+</code></pre>
+<p>也可以链接到父模块或者子模块：</p>
+<pre><code class="language-md">[`Value`]: ../enum.Value.html
+[`DeserializeOwned`]: de/trait.DeserializeOwned.html
+</code></pre>
+<p>这条原则由 RFC 1574 正式推荐，可参考其 <a href="https://github.com/rust-lang/rfcs/blob/master/text/1574-more-api-documentation-conventions.md#link-all-the-things">&quot;Link all the things&quot;</a> 部分。</p>
+<p><a id="c-metadata"></a></p>
+<h2 id="cargotoml-应包含所有常见的配置数据"><a class="header" href="#cargotoml-应包含所有常见的配置数据">Cargo.toml 应包含所有常见的配置数据</a></h2>
+<blockquote>
+<p>Cargo.toml includes all common metadata (C-METADATA)</p>
+</blockquote>
+<p>在 <code>Cargo.toml</code> 的 <code>[package]</code> 部分应该要有以下内容：</p>
+<ul>
+<li><code>authors</code></li>
+<li><code>description</code></li>
+<li><code>license</code></li>
+<li><code>repository</code></li>
+<li><code>readme</code></li>
+<li><code>keywords</code></li>
+<li><code>categories</code></li>
+</ul>
+<p>此外，这两个配置字段可选填：</p>
+<ul>
+<li><code>documentation</code></li>
+<li><code>homepage</code></li>
+</ul>
+<p><em>crates.io</em> 默认会把已发布的 crate 文档链接到 <a href="https://docs.rs"><em>docs.rs</em></a> 。
+<code>documentation</code> 配置信息在文档发布到 <em>docs.rs</em> 之外的地方时才需要填写。
+比如这个 crate 链接了不在 <em>docs.rs</em> 上构建的共享库。</p>
+<p><code>homepage</code> 配置信息只填写除源码仓库或 API 文档网址之外的单独网站。
+不要让 <code>homepage</code> 和 <code>documentation</code> 或者 <code>repository</code> 的值重复。
+比如 serde 设置其 <code>homepage</code> 为 <em>https://serde.rs</em> 。</p>
+<p><a id="c-html-root"></a></p>
+<h2 id="设置-html_root_url-属性-httpsdocsrscratexyz"><a class="header" href="#设置-html_root_url-属性-httpsdocsrscratexyz">设置 html_root_url 属性 &quot;https://docs.rs/CRATE/X.Y.Z&quot;</a></h2>
+<blockquote>
+<p>Crate sets html_root_url attribute (C-HTML-ROOT)</p>
+</blockquote>
+<!--
+Remove this guideline once rustdoc links no-deps documentation with no
+html_root_url to docs.rs by default.
+https://github.com/rust-lang/rust/issues/42301
+-->
+<p>加入 crate 使用 docs.rs 作为其主要的 API 文档平台，
+那么 <code>html_root_url</code> 应该指向 <code>&quot;https://docs.rs/CRATE/MAJOR.MINOR.PATCH&quot;</code> 地址。<sup class="footnote-reference"><a href="#html_root_url">1</a></sup></p>
+<p>在编译下游 crates 时， <code>html_root_url</code> 属性告诉 rustdoc 
+如何生成指向条目的 URLs 。
+如果没有这个属性，依赖于这个 crate 的其他 crates 里的文档链接地址就不正确。</p>
+<pre><code class="language-rust ignored">#![doc(html_root_url = &quot;https://docs.rs/log/0.3.8&quot;)]
+</code></pre>
+<p>因为这个 URL 包含确定的版本号，所以这个版本号必须和 <code>Cargo.toml</code> 里的版本号同步。
+<a href="https://crates.io/crates/version-sync"><code>version-sync</code></a> crate 能帮助你做集成测试，当 <code>html_root_url</code> 
+里的版本号落后于 crate 的版本号时，测试不通过。</p>
+<p>如果你不喜欢使用 <a href="https://crates.io/crates/version-sync"><code>version-sync</code></a> 提供的测试机制，那么建议你在 <code>Cargo.toml</code> 
+里 version 一行添加注释来 <em>提醒你</em> 保持这两者同步，就像：</p>
+<pre><code class="language-toml">version = &quot;0.3.8&quot; # remember to update html_root_url
+</code></pre>
+<p>对于发布在 docs.rs 之外的文档， <code>html_root_url</code> 得设置成一个增加
+<em>crate 名 + index.html</em> 之后能访问到 crate 根目录文档的地址。
+比如 crate 的根目录文档地址是 <code>&quot;https://api.rocket.rs/rocket/index.html&quot;</code> ，
+那么 <code>html_root_url</code> 的值应该填成 <code>&quot;https://api.rocket.rs&quot;</code> 。</p>
+<div class="footnote-definition" id="html_root_url"><sup class="footnote-definition-label">1</sup>
+<p>译者注：当 rustdoc 支持不设置 <code>html_root_url</code> 默认就指向 docs.rs
+的功能之后，这条原则就可以删除。见 
+<a href="https://github.com/rust-lang/rust/issues/42301">issue 42301</a> 。
+此外，你还可以看看文档 <a href="https://doc.rust-lang.org/rustdoc/the-doc-attribute.html#html_root_url">rustdoc: html_root_url</a> 和 <a href="https://doc.rust-lang.org/cargo/commands/cargo-doc.html">cargo doc</a> 。</p>
+</div>
+<p><a id="c-relnotes"></a></p>
+<h2 id="发布时-记录该版本的重大变化"><a class="header" href="#发布时-记录该版本的重大变化">发布时 记录该版本的重大变化</a></h2>
+<blockquote>
+<p>Release notes document all significant changes (C-RELNOTES)</p>
+</blockquote>
+<p>crate 的使用者能从版本说明 (release note) 中找到每个发布版本的更改概要。
+这些版本说明或者其链接应该在 crate 根文档 以及/或者 
+Cargo.toml 填写的仓库说明 里有介绍。</p>
+<p>不兼容的变更 （正如 <a href="https://github.com/rust-lang/rfcs/blob/master/text/1105-api-evolution.md">RFC 1105</a> 所定义） 应该清楚地写在版本说明里。</p>
+<p>如果使用 Git 来追踪 crate 源代码，那么每个发布到 <em>crates.io</em> 上的版本
+应该有对应的标签 (tag) 来标记这次已发布的提交记录。
+不使用 Git 的版本控制工具也应该用类似的方式进行处理。
+参考以下 Git 命令：</p>
+<pre><code class="language-bash"># Tag the current commit
+GIT_COMMITTER_DATE=$(git log -n1 --pretty=%aD) git tag -a -m &quot;Release 0.3.0&quot; 0.3.0
+git push --tags
+</code></pre>
+<p>有注释的 tag 会更好，因为一些 Git 命令会在有注释 tag 存在的情况下
+忽略不带注释的 tag 。</p>
+<p>例子：</p>
+<ul>
+<li><a href="https://github.com/serde-rs/serde/releases/tag/v1.0.0">Serde 1.0.0 release notes</a></li>
+<li><a href="https://github.com/serde-rs/serde/releases/tag/v0.9.8">Serde 0.9.8 release notes</a></li>
+<li><a href="https://github.com/serde-rs/serde/releases/tag/v0.9.0">Serde 0.9.0 release notes</a></li>
+<li><a href="https://github.com/diesel-rs/diesel/blob/master/CHANGELOG.md">Diesel change log</a></li>
+</ul>
+<p><a id="c-hidden"></a></p>
+<h2 id="文档不应该展示无太大帮助的实现细节"><a class="header" href="#文档不应该展示无太大帮助的实现细节">文档不应该展示无太大帮助的实现细节</a></h2>
+<blockquote>
+<p>Rustdoc does not show unhelpful implementation details (C-HIDDEN)</p>
+</blockquote>
+<p>rustdoc 应该包含帮助使用者充分使用该 crate 的所有信息。
+解释相关的实现细节是可以的，
+但是不应该在文档里展开论述这些细节。</p>
+<p>尤其应该挑选哪些条目可以在 rustdoc 展示出来 —— 
+展示那些让使用者完全掌握使用这个 crate 的内容，
+其他的内容不展示。
+下面代码中给 <code>PublicError</code> 实现 <code>From&lt;PrivateError&gt;</code> 的 rustdoc 文档会默认展示出来，
+使用 <code>#[doc(hidden)]</code> 来隐藏它，因为用户不会在代码里面用到私有的 <code>PrivateError</code> ，
+所以这个 impl 块对用户来说完全无关。</p>
+<pre><code class="language-rust ignored">// This error type is returned to users.
+pub struct PublicError { /* ... */ }
+
+// This error type is returned by some private helper functions.
+struct PrivateError { /* ... */ }
+
+// Enable use of `?` operator.
+#[doc(hidden)]
+impl From&lt;PrivateError&gt; for PublicError {
+    fn from(err: PrivateError) -&gt; PublicError {
+        /* ... */
+    }
+}
+</code></pre>
+<p><a href="https://github.com/rust-lang/rfcs/blob/master/text/1422-pub-restricted.md"><code>pub(crate)</code></a> 是一个很棒的工具，它从公有 API 移除掉实现的细节：<br />
+让条目于 定义所在的模块之外 被使用，但 定义所在的 crate 之外 无法被使用。
+（仅让条目在 crate 内可见，在 crate 之外不可见）</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                                                    <a rel="prev" href="macros.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+                                                    <a rel="next" href="predictability.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                    <a rel="prev" href="macros.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+                                    <a rel="next" href="predictability.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                            </nav>
+
+        </div>
+
+        
+        
+        
+                <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+                <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="editor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mode-rust.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-dawn.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+        
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+                <script type="text/javascript" src="theme/pagetoc.js"></script>
+        
+        
+    </body>
+</html>

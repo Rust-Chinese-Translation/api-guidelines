@@ -1,0 +1,491 @@
+<!DOCTYPE HTML>
+<html lang="zh" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>类型安全 - Rust API Guidelines（Rust API 编写指南）</title>
+                
+
+        <!-- Custom HTML head -->
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="关于如何设计和呈现 Rust APIs 的一些建议">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+                <link rel="stylesheet" href="theme/pagetoc.css">
+        
+            </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="about.html">关于本书</a></li><li class="chapter-item affix "><a href="checklist.html">一览表</a></li><li class="chapter-item "><a href="naming.html"><strong aria-hidden="true">1.</strong> 命名</a></li><li class="chapter-item "><a href="interoperability.html"><strong aria-hidden="true">2.</strong> 互通互用</a></li><li class="chapter-item "><a href="macros.html"><strong aria-hidden="true">3.</strong> 宏</a></li><li class="chapter-item "><a href="documentation.html"><strong aria-hidden="true">4.</strong> 文档编写</a></li><li class="chapter-item "><a href="predictability.html"><strong aria-hidden="true">5.</strong> 可预测</a></li><li class="chapter-item "><a href="flexibility.html"><strong aria-hidden="true">6.</strong> 灵活性</a></li><li class="chapter-item expanded "><a href="type-safety.html" class="active"><strong aria-hidden="true">7.</strong> 类型安全</a></li><li class="chapter-item "><a href="dependability.html"><strong aria-hidden="true">8.</strong> 可依赖</a></li><li class="chapter-item "><a href="debuggability.html"><strong aria-hidden="true">9.</strong> 可调试</a></li><li class="chapter-item "><a href="future-proofing.html"><strong aria-hidden="true">10.</strong> 前瞻性</a></li><li class="chapter-item "><a href="necessities.html"><strong aria-hidden="true">11.</strong> 必要项</a></li><li class="chapter-item affix "><a href="external-links.html">拓展阅读</a></li></ol>            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
+
+                    <h1 class="menu-title">Rust API Guidelines（Rust API 编写指南）</h1>
+
+                    <div class="right-buttons">
+                                                                        <a href="https://github.com/zjp-CN/api-guidelines" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                                                
+                    </div>
+                </div>
+
+                                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <h1 id="类型安全"><a class="header" href="#类型安全">类型安全</a></h1>
+<p><a id="c-newtype"></a></p>
+<h2 id="newtype-提供静态的区分功能"><a class="header" href="#newtype-提供静态的区分功能">newtype 提供静态的区分功能</a></h2>
+<blockquote>
+<p>Newtypes provide static distinctions (C-NEWTYPE)</p>
+</blockquote>
+<p>newtype 能静态地<sup class="footnote-reference"><a href="#static">1</a></sup>区分同一个里层类型不同的含义。</p>
+<p>比如 一个 <code>f64</code> 的值可能用来表示几英里，也可能表示几公里。
+使用 newtype ，就能让我们知道这个值意图表示什么。</p>
+<pre><code class="language-rust ignored">struct Miles(pub f64);
+struct Kilometers(pub f64);
+
+impl Miles {
+    fn to_kilometers(self) -&gt; Kilometers { /* ... */ }
+}
+impl Kilometers {
+    fn to_miles(self) -&gt; Miles { /* ... */ }
+}
+</code></pre>
+<p>一旦对这两种类型作区分，我们能静态地确保不把他们混为一谈。
+打个比方，下面这个函数不会意外地会调用 <code>Kilometers</code> 类型的值。</p>
+<pre><code class="language-rust ignored">fn are_we_there_yet(distance_travelled: Miles) -&gt; bool { /* ... */ }
+</code></pre>
+<p>编译器会提醒我们需要转换成 <code>Miles</code> ，
+从而避免了某些 <a href="http://en.wikipedia.org/wiki/Mars_Climate_Orbiter">灾难性的 bugs</a> 。</p>
+<div class="footnote-definition" id="static"><sup class="footnote-definition-label">1</sup>
+<p>译者注：之所以称之为 <em>static</em> / <em>statically</em> ，是因为 newtype 
+类型一旦被定义就不会发生变化，从而它代表的含义就是固定不变的。</p>
+</div>
+<p><a id="c-custom-type"></a></p>
+<h2 id="参数应使用类型来表明意图"><a class="header" href="#参数应使用类型来表明意图">参数应使用类型来表明意图</a></h2>
+<blockquote>
+<p>Arguments convey meaning through types, not <code>bool</code> or <code>Option</code> (C-CUSTOM-TYPE)</p>
+</blockquote>
+<p>请写这样的代码：</p>
+<pre><code class="language-rust ignored">let w = Widget::new(Small, Round)
+</code></pre>
+<p>而不是这样的：</p>
+<pre><code class="language-rust ignored">let w = Widget::new(true, false)
+</code></pre>
+<p>像 <code>bool</code> 、 <code>u8</code> 、 <code>Option</code> 这样的核心类型有很多可能的含义。</p>
+<p>所以无论你使用枚举体、结构体还是元组，
+请经过思考定义一种类型来传达含义和 <a href="https://doc.rust-lang.org/nightly/reference/subtyping.html#variance">不变性</a>。
+上面这个例子中，如果不看参数的名字，根据 <code>true</code> 和 <code>false</code> 
+你不能马上知道它们是什么意思，但是 <code>Small</code> 和 <code>Round</code> 就更具有联想性。</p>
+<p>使用自定义类型让后面要谈到的配置拓展更简单，比如增加一个 <code>ExtraLarge</code> 成员。</p>
+<p>阅读 <a href="#c-newtype">newtype 模式</a> 来做到以低花销的方式封装现有类型。</p>
+<p><a id="c-bitflag"></a></p>
+<h2 id="用-bitflags-来存放一组标志"><a class="header" href="#用-bitflags-来存放一组标志">用 <code>bitflags</code> 来存放一组标志</a></h2>
+<blockquote>
+<p>Types for a set of flags are <code>bitflags</code>, not enums (C-BITFLAG)</p>
+</blockquote>
+<p>Rust 支持 <code>enum</code> 类型，它可以带有显式的判别式 (discriminants) 。</p>
+<pre><code class="language-rust ignored">enum Color {
+    Red = 0xff0000,
+    Green = 0x00ff00,
+    Blue = 0x0000ff,
+}
+</code></pre>
+<p>当枚举类型需要被序列化成整数以便兼容其他系统或语言的时候，自定义判别式是有用的。
+判别式提供了 “类型安全” 的 APIs ：
+给函数传入 <code>Color</code> 而不是整数，就能保证得到良好形式的输入，
+即使函数把这些 <code>Color</code> 输入仍然看作是整数。</p>
+<p><code>enum</code> 允许 API 从其中刚好选择一个成员。
+有时 API 输入存在或需要一组标志 (flags) ，在 C 语言里，
+经常让每个标志 (flag) 对应上一个特定的位 (bit) ，
+比如让一个数字代表是 32 位或 64 位。
+Rust 的 <a href="https://github.com/bitflags/bitflags"><code>bitflags</code></a> crate 为这种模式提供了类型安全的解决办法。</p>
+<pre><code class="language-rust ignored">#[macro_use]
+extern crate bitflags;
+
+bitflags! {
+    struct Flags: u32 {
+        const FLAG_A = 0b00000001;
+        const FLAG_B = 0b00000010;
+        const FLAG_C = 0b00000100;
+    }
+}
+
+fn f(settings: Flags) {
+    if settings.contains(Flags::FLAG_A) {
+        println!(&quot;doing thing A&quot;);
+    }
+    if settings.contains(Flags::FLAG_B) {
+        println!(&quot;doing thing B&quot;);
+    }
+    if settings.contains(Flags::FLAG_C) {
+        println!(&quot;doing thing C&quot;);
+    }
+}
+
+fn main() {
+    f(Flags::FLAG_A | Flags::FLAG_C);
+}
+</code></pre>
+<p><a id="c-builder"></a></p>
+<h2 id="利用构造模式构造复杂的值"><a class="header" href="#利用构造模式构造复杂的值">利用构造模式构造复杂的值</a></h2>
+<blockquote>
+<p>Builders enable construction of complex values (C-BUILDER)</p>
+</blockquote>
+<p>有些数据结构构造起来很复杂，因为构造它们需要：</p>
+<ul>
+<li>大量的输入</li>
+<li>复合类型（比如 slices ）</li>
+<li>可选择的配置数据</li>
+<li>在多个可选项中做选择</li>
+</ul>
+<p>这很容易导致许多带有不同的构造器 (constructors) ，而且每个构造器有很多参数。</p>
+<p>假设 <code>T</code> 是上面描述的一种数据结构，那么考虑给 <code>T</code> 引入构造器模式 (builder pattern) 。</p>
+<ol>
+<li>引入单独的数据类型 <code>TBuilder</code> 来增量配置 <code>T</code> 的值。
+如果可以的话，选一个更好听的名字：比如 <a href="https://doc.rust-lang.org/std/process/struct.Command.html"><code>Command</code></a> 是
+子进程 <a href="https://doc.rust-lang.org/std/process/struct.Child.html">Child</a> 的构造器、
+<a href="https://docs.rs/url/1.4.0/url/struct.ParseOptions.html"><code>ParseOptions</code></a> 是 <a href="https://docs.rs/url/1.4.0/url/struct.Url.html"><code>Url</code></a> 的构造器。</li>
+<li>仅当 <code>T</code> 需要数据的时候才应该给构造器的方法传入参数。</li>
+<li>构造器应该提供一套方便的配置方法，包括增量初始化复合型输入（像 slice 一样）。
+这些方法应该返回 <code>self</code> 从而允许链式调用。</li>
+<li>构造器应该提供一个或更多的最终方法来实际构造 <code>T</code> 。</li>
+</ol>
+<p>构造器模式尤其适合于 构造 <code>T</code> 时涉及意外的连带后果 的场景，
+比如开始一个任务或开启一个进程。</p>
+<p>Rust 里有两种构造器模式，区别在于处理所有权上：</p>
+<h3 id="非消耗型构造器"><a class="header" href="#非消耗型构造器">非消耗型构造器</a></h3>
+<p>有些情况构造最终的 <code>T</code> 不需要构造器被消耗掉 (consume) 。
+下面这个例子是 <a href="https://doc.rust-lang.org/std/process/struct.Command.html"><code>std::process::Command</code></a> 的简化版：</p>
+<pre><code class="language-rust ignored">// 注意：这是一个简化的版本，实际中 Command API 不使用有所有权的 String
+
+pub struct Command {
+    program: String,
+    args: Vec&lt;String&gt;,
+    cwd: Option&lt;String&gt;,
+    // etc
+}
+
+impl Command {
+    pub fn new(program: String) -&gt; Command {
+        Command {
+            program: program,
+            args: Vec::new(),
+            cwd: None,
+        }
+    }
+
+    /// 增加一个命令行参数以传给程序
+    pub fn arg(&amp;mut self, arg: String) -&gt; &amp;mut Command {
+        self.args.push(arg);
+        self
+    }
+
+    /// 增加多个命令行参数以传给程序
+    pub fn args(&amp;mut self, args: &amp;[String]) -&gt; &amp;mut Command {
+        self.args.extend_from_slice(args);
+        self
+    }
+
+    /// 设置子进程工作目录
+    pub fn current_dir(&amp;mut self, dir: String) -&gt; &amp;mut Command {
+        self.cwd = Some(dir);
+        self
+    }
+
+    /// 以子进程方式执行命令，然后返回子进程
+    pub fn spawn(&amp;self) -&gt; io::Result&lt;Child&gt; {
+        /* ... */
+    }
+}
+</code></pre>
+<p>注意 <code>spawn</code> 方法实际上利用构造器的配置来开启一个进程，
+以共享引用的方式使用了构造器，
+因为开启进程无需配置数据的所有权。
+而且用于配置的方法传入和返回 <code>self</code> 的可变引用。</p>
+<p>这种方式的优点：
+整个过程都使用借用，<code>Command</code> 能方便地以一行或更复杂的方式使用。
+<strong>推荐</strong> 使用这种方式。</p>
+<pre><code class="language-rust ignored">// 用一行进行配置
+Command::new(&quot;/bin/cat&quot;).arg(&quot;file.txt&quot;).spawn();
+
+// 进行复杂的配置
+let mut cmd = Command::new(&quot;/bin/ls&quot;);
+cmd.arg(&quot;.&quot;);
+if size_sorted {
+    cmd.arg(&quot;-S&quot;);
+}
+cmd.spawn();
+</code></pre>
+<h3 id="消耗型构造器"><a class="header" href="#消耗型构造器">消耗型构造器</a></h3>
+<p>有时候，为了构造出最后的 <code>T</code> ，构造器必须传递所有权。
+这意味着必须给方法传入 <code>self</code> 而不是 <code>&amp;self</code> 。</p>
+<pre><code class="language-rust ignored">impl TaskBuilder {
+    /// 给将要运行的任务命名
+    pub fn named(mut self, name: String) -&gt; TaskBuilder {
+        self.name = Some(name);
+        self
+    }
+
+    /// 把本地任务的 stdout 重新定向
+    pub fn stdout(mut self, stdout: Box&lt;io::Write + Send&gt;) -&gt; TaskBuilder {
+        self.stdout = Some(stdout);
+        self
+    }
+
+    /// 创建和执行新的子任务
+    pub fn spawn&lt;F&gt;(self, f: F) where F: FnOnce() + Send {
+        /* ... */
+    }
+}
+</code></pre>
+<p>在这里， <code>stdout</code> 配置涉及到传传递 <code>io::Write</code> 的所有权，
+所以必须在构造的时候（ <code>spawn</code> 方法里面）再传递给任务。</p>
+<p>当最终的构造器需要所有权时，面临一个基本的抉择：</p>
+<ul>
+<li>如果其他的构造方法被传入或者返回 可变借用 <code>&amp;mut self</code> ，
+那么复杂的配置情况也能很好地工作，但是不可能用一行完成所有配置。</li>
+<li>如果其他的构造方法被传入或者返回 有所有权的 <code>self</code> ，
+可以很好地使用一行来进行所有配置，但是在进行复杂配置时就不太方便。</li>
+</ul>
+<p>遵循 “让简单的事简单完成，困难的事也可能完成” 这句箴言，
+消耗型构造器所有的方法都应该被传入和返回有所有权的 <code>self</code> 。
+用户的代码可以像下面这样工作：</p>
+<pre><code class="language-rust ignored">// 用一行进行配置
+TaskBuilder::new(&quot;my_task&quot;).spawn(|| { /* ... */ });
+
+// 进行复杂的配置
+let mut task = TaskBuilder::new();
+task = task.named(&quot;my_task_2&quot;); // 必须重新赋值出去，从而获得所有权
+if reroute {
+    task = task.stdout(mywriter);
+}
+task.spawn(|| { /* ... */ });
+</code></pre>
+<p>一行配置的方式像上一个方法那样可以工作，
+因为所有权在每个构造器方法上依次传递，
+直到被 <code>spawn</code> 消耗掉。
+然而复杂配置的情况更啰嗦：
+在最后一步需要把构造器重新赋值给一个变量。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                                                    <a rel="prev" href="flexibility.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+                                                    <a rel="next" href="dependability.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                    <a rel="prev" href="flexibility.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+                                    <a rel="next" href="dependability.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                            </nav>
+
+        </div>
+
+        
+        
+        
+                <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+                <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="editor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mode-rust.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-dawn.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+        
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+                <script type="text/javascript" src="theme/pagetoc.js"></script>
+        
+        
+    </body>
+</html>

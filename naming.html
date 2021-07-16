@@ -1,0 +1,549 @@
+<!DOCTYPE HTML>
+<html lang="zh" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>命名 - Rust API Guidelines（Rust API 编写指南）</title>
+                
+
+        <!-- Custom HTML head -->
+        
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="关于如何设计和呈现 Rust APIs 的一些建议">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+                <link rel="icon" href="favicon.svg">
+                        <link rel="shortcut icon" href="favicon.png">
+                <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+                <link rel="stylesheet" href="fonts/fonts.css">
+        
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+                <link rel="stylesheet" href="theme/pagetoc.css">
+        
+            </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item affix "><a href="about.html">关于本书</a></li><li class="chapter-item affix "><a href="checklist.html">一览表</a></li><li class="chapter-item expanded "><a href="naming.html" class="active"><strong aria-hidden="true">1.</strong> 命名</a></li><li class="chapter-item "><a href="interoperability.html"><strong aria-hidden="true">2.</strong> 互通互用</a></li><li class="chapter-item "><a href="macros.html"><strong aria-hidden="true">3.</strong> 宏</a></li><li class="chapter-item "><a href="documentation.html"><strong aria-hidden="true">4.</strong> 文档编写</a></li><li class="chapter-item "><a href="predictability.html"><strong aria-hidden="true">5.</strong> 可预测</a></li><li class="chapter-item "><a href="flexibility.html"><strong aria-hidden="true">6.</strong> 灵活性</a></li><li class="chapter-item "><a href="type-safety.html"><strong aria-hidden="true">7.</strong> 类型安全</a></li><li class="chapter-item "><a href="dependability.html"><strong aria-hidden="true">8.</strong> 可依赖</a></li><li class="chapter-item "><a href="debuggability.html"><strong aria-hidden="true">9.</strong> 可调试</a></li><li class="chapter-item "><a href="future-proofing.html"><strong aria-hidden="true">10.</strong> 前瞻性</a></li><li class="chapter-item "><a href="necessities.html"><strong aria-hidden="true">11.</strong> 必要项</a></li><li class="chapter-item affix "><a href="external-links.html">拓展阅读</a></li></ol>            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                                                <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                                            </div>
+
+                    <h1 class="menu-title">Rust API Guidelines（Rust API 编写指南）</h1>
+
+                    <div class="right-buttons">
+                                                                        <a href="https://github.com/zjp-CN/api-guidelines" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                                                
+                    </div>
+                </div>
+
+                                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <!-- Page table of contents -->
+                        <div class="sidetoc"><nav class="pagetoc"></nav></div>
+
+                        <h1 id="命名规范"><a class="header" href="#命名规范">命名规范</a></h1>
+<p><a id="c-case"></a></p>
+<h2 id="大小写规范-rfc-430"><a class="header" href="#大小写规范-rfc-430">大小写规范 RFC 430</a></h2>
+<blockquote>
+<p>Casing conforms to RFC 430 (C-CASE)</p>
+</blockquote>
+<p>基础的命名规范在 <a href="https://github.com/rust-lang/rfcs/blob/master/text/0430-finalizing-naming-conventions.md">RFC 430</a> 中有描述。</p>
+<p>通常，Rust 倾向于在“类型级别”（类型和 trait ）的结构中使用 <code>UpperCamelCase</code> ，
+在“值级别”的结构中使用 <code>snake_case</code> 。确切说：</p>
+<table><thead><tr><th>Item</th><th>规范</th></tr></thead><tbody>
+<tr><td>Crates</td><td><a href="https://github.com/rust-lang/api-guidelines/issues/29">有争议</a> <sup class="footnote-reference"><a href="#crate-name">1</a></sup></td></tr>
+<tr><td>Modules</td><td><code>snake_case</code></td></tr>
+<tr><td>Types</td><td><code>UpperCamelCase</code></td></tr>
+<tr><td>Traits</td><td><code>UpperCamelCase</code></td></tr>
+<tr><td>Enum variants</td><td><code>UpperCamelCase</code></td></tr>
+<tr><td>Functions</td><td><code>snake_case</code></td></tr>
+<tr><td>Methods</td><td><code>snake_case</code></td></tr>
+<tr><td>General constructors</td><td><code>new</code> 或者 <code>with_more_details</code></td></tr>
+<tr><td>Conversion constructors</td><td><code>from_some_other_type</code></td></tr>
+<tr><td>Macros</td><td><code>snake_case!</code></td></tr>
+<tr><td>Local variables</td><td><code>snake_case</code></td></tr>
+<tr><td>Statics</td><td><code>SCREAMING_SNAKE_CASE</code></td></tr>
+<tr><td>Constants</td><td><code>SCREAMING_SNAKE_CASE</code></td></tr>
+<tr><td>Type parameters</td><td>简明的 <code>UpperCamelCase</code> ，通常使用单个大写字母： <code>T</code></td></tr>
+<tr><td>Lifetimes</td><td>简短的 <code>lowercase</code>，通常使用单个小写字母 <code>'a</code>, <code>'de</code>, <code>'src</code></td></tr>
+<tr><td>Features</td><td><a href="https://github.com/rust-lang/api-guidelines/issues/101">有争议</a> ，但是一般遵照 <a href="#c-feature">C-FEATURE</a></td></tr>
+</tbody></table>
+<p>在 <code>UpperCamelCase</code> 情况下，复合词的首字母缩略词和缩略词算作一个单词：
+使用 <code>Uuid</code> 而不使用 <code>UUID</code>，使用 <code>Usize</code> 而不使用 <code>USize</code>，
+使用 <code>Stdin</code> 而不使用 <code>StdIn</code>。
+在 <code>snake_case</code> 情况下，首字母缩略词和缩略词都是小写： <code>is_xid_start</code> 。</p>
+<p>在 <code>snake_case</code> 或者 <code>SCREAMING_SNAKE_CASE</code> 情况下，
+一个“单词”不应该由单个字母组成——除非这个字母时最后一个“词”：
+使用 <code>btree_map</code> 而不使用 <code>b_tree_map</code>，使用 <code>PI_2</code> 而不使用 <code>PI2</code> 。</p>
+<p>Crate 的名称不应该使用 <code>-rs</code> 或者 <code>-rust</code> 作为后缀或者前缀。
+因为每个 crate 都是 Rust 编写的！
+没必要一直提醒使用者这一点。</p>
+<div class="footnote-definition" id="crate-name"><sup class="footnote-definition-label">1</sup>
+<p>译者注：一般是 <code>snake_case</code> 或 <code>kebab-case</code> ，但只能存在一种形式，
+且实际在 Rust 代码中使用时，后者需使用前者形式。
+如 <a href="https://github.com/actix/actix-web"><code>use actix_web</code></a> </p>
+</div>
+<p>来自标准库的例子：</p>
+<p>整个标准库都是这样做的。
+这条原则不难。</p>
+<p><a id="c-conv"></a></p>
+<h2 id="遵循-as_-to_-into_-规范-用以特定类型转换"><a class="header" href="#遵循-as_-to_-into_-规范-用以特定类型转换">遵循 <code>as_</code>, <code>to_</code>, <code>into_</code> 规范 用以特定类型转换</a></h2>
+<blockquote>
+<p>Ad-hoc conversions follow <code>as_</code>, <code>to_</code>, <code>into_</code> conventions (C-CONV)</p>
+</blockquote>
+<p>应该使用带有以下前缀名称方法来进行特定类型转换：</p>
+<table><thead><tr><th>名称前缀</th><th>内存代价</th><th>所有权</th></tr></thead><tbody>
+<tr><td><code>as_</code></td><td>无代价</td><td>borrowed -&gt; borrowed</td></tr>
+<tr><td><code>to_</code></td><td>代价昂贵</td><td>borrowed -&gt; borrowed<br>borrowed -&gt; owned (非 Copy 类型)<br>owned -&gt; owned (Copy 类型)</td></tr>
+<tr><td><code>into_</code></td><td>视情况而定</td><td>owned -&gt; owned (非 Copy 类型)</td></tr>
+</tbody></table>
+<p>例如：</p>
+<ul>
+<li><code>as_</code>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/primitive.str.html#method.as_bytes"><code>str::as_bytes()</code></a> 
+用于查看 UTF-8 字节的 <code>str</code> 切片，
+这是无内存代价的（不会产生内存分配）。
+传入值是 <code>&amp;str</code> 类型，输出值是 <code>&amp;[u8]</code> 类型。</li>
+</ul>
+</li>
+<li><code>to_</code>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/path/struct.Path.html#method.to_str"><code>Path::to_str</code></a> 
+对操作系统路径进行 UTF-8 字节检查，需要很大花销。
+虽然输入和输出都是借用，但是这个方法对运行时产生不容忽视的代价，
+所以不应使用 <code>as_str</code> 名称。</li>
+<li><a href="https://doc.rust-lang.org/std/primitive.str.html#method.to_lowercase"><code>str::to_lowercase()</code></a> 
+生成正确的 Unicode 小写字符，
+涉及遍历字符串的字符，可能需要分配内存。
+输入值是 <code>&amp;str</code> 类型，输出值是 <code>String</code> 类型。</li>
+<li><a href="https://doc.rust-lang.org/std/primitive.f64.html#method.to_radians"><code>f64::to_radians()</code></a> 
+把浮点数的角度制转换成弧度制。
+输入和输出都是 <code>f64</code> 。没必要传入 <code>&amp;f64</code> ，因为复制 <code>f64</code> 花销很小。
+但是使用 <code>into_radians</code> 名称就会具有误导性，因为输入数据没有被消耗。</li>
+</ul>
+</li>
+<li><code>into_</code>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/string/struct.String.html#method.into_bytes"><code>String::into_bytes()</code></a>
+从 <code>String</code> 提取出背后的 <code>Vec&lt;u8&gt;</code> 数据，这是无代价的。
+它转移了 <code>String</code> 的所有权，然后返回具有所有权的 <code>Vec&lt;u8&gt;</code> 。</li>
+<li><a href="https://doc.rust-lang.org/std/io/struct.BufReader.html#method.into_inner"><code>BufReader::into_inner()</code></a> 
+转移了 buffered reader 的所有权，取出其背后的 reader ，这是无代价的。
+存于缓冲区的数据被丢弃了。</li>
+<li><a href="https://doc.rust-lang.org/std/io/struct.BufWriter.html#method.into_inner"><code>BufWriter::into_inner()</code></a> 
+转移了 buffered writer 的所有权，取出其背后的 writer ，这可能以很大的代价刷新所有缓存数据。</li>
+</ul>
+</li>
+</ul>
+<p>以 <code>as_</code> 和 <code>into_</code> 作为前缀的类型转换通常 <em>减少了抽象</em> ，
+要么是查看背后的数据 ( <code>as</code> ) ，要么是分解 (deconstructe) 背后的数据 ( <code>into</code> ) 。
+相对地，以 <code>to_</code> 作为前缀的类型转换处于同一个抽象层次，
+但是做了更多的工作。</p>
+<p>当一个类型用更高级别的语义 (higher-level semantics) 封装 (wraps) 一个与之有关的值时，
+应该使用 <code>into_inner()</code> 方法名来取出被封装的值。
+这适用于以下封装器：
+读取缓存 (<a href="https://doc.rust-lang.org/std/io/struct.BufReader.html#method.into_inner"><code>BufReader</code></a>) 、编码或解码 (<a href="https://docs.rs/flate2/1.0.20/flate2/read/struct.GzDecoder.html#method.into_inner"><code>GzDecoder</code></a>) 、取出原子 (<a href="https://doc.rust-lang.org/std/sync/atomic/struct.AtomicBool.html#method.into_inner"><code>AtomicBool</code></a>) 、
+或者任何相似的语义 (<a href="https://doc.rust-lang.org/std/io/struct.BufWriter.html#method.into_inner"><code>BufWriter</code></a>)。</p>
+<p>如果类型转换方法返回的类型具有 <code>mut</code> 标识符，
+那么这个方法的名称应如同返回类型组成部分的顺序那样，带有 <code>mut</code> 名。
+比如 <a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.as_mut_slice"><code>Vec::as_mut_slice</code></a> 返回 <code>mut slice</code> 类型，这个方法的功能正如其名称所述，
+所以这个名称优于 <code>as_slice_mut</code> 。</p>
+<pre><code class="language-rust.ignored">// Return type is a mut slice.
+fn as_mut_slice(&amp;mut self) -&gt; &amp;mut [T];
+</code></pre>
+<p>更多来自标准库的例子：</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/result/enum.Result.html#method.as_ref"><code>Result::as_ref</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/cell/struct.RefCell.html#method.as_ptr"><code>RefCell::as_ptr</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/primitive.slice.html#method.to_vec"><code>slice::to_vec</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/option/enum.Option.html#method.into_iter"><code>Option::into_iter</code></a></li>
+</ul>
+<p><a id="c-getter"></a></p>
+<h2 id="getter-命名规范"><a class="header" href="#getter-命名规范">getter 命名规范</a></h2>
+<blockquote>
+<p>Getter names follow Rust convention (C-GETTER)</p>
+</blockquote>
+<p>在 Rust 代码中，getter 方法（用来访问或者获取数据的方法）
+并不使用 <code>get_</code> 前缀，但是也有一些例外。</p>
+<pre><code class="language-rust ignored">pub struct S {
+    first: First,
+    second: Second,
+}
+
+impl S {
+    // Not `get_first`.
+    pub fn first(&amp;self) -&gt; &amp;First {
+        &amp;self.first
+    }
+
+    // Not `get_first_mut`, `get_mut_first`, or `mut_first`.
+    pub fn first_mut(&amp;mut self) -&gt; &amp;mut First {
+        &amp;mut self.first
+    }
+}
+</code></pre>
+<p>仅在访问或获得 一个事物 这种显而易见的情况时，使用 <code>get</code> 来命名才比较合理。
+比如 <a href="https://doc.rust-lang.org/std/cell/struct.Cell.html#method.get"><code>Cell::get</code></a> 访问其 <code>Cell</code> 内容。</p>
+<p>对于在运行时进行验证（比如边界检查）的 getters ，
+考虑给 unsafe 的方法名称增加 <code>_unchecked</code> 。
+通常会有以下一些签名：</p>
+<pre><code class="language-rust ignored">fn get(&amp;self, index: K) -&gt; Option&lt;&amp;V&gt;;
+fn get_mut(&amp;mut self, index: K) -&gt; Option&lt;&amp;mut V&gt;;
+unsafe fn get_unchecked(&amp;self, index: K) -&gt; &amp;V;
+unsafe fn get_unchecked_mut(&amp;mut self, index: K) -&gt; &amp;mut V;
+</code></pre>
+<p>getter 和类型转换 (conversion | <a href="#c-conv">C-CONV</a>) 之间的区别很小，
+大部分时候不那么清晰可辨。
+比如 <a href="https://docs.rs/tempdir/0.3.7/tempdir/struct.TempDir.html#method.path"><code>TempDir::path</code></a> 可以被理解为临时目录的文件系统路径的 getter ，
+而 <a href="https://docs.rs/tempdir/0.3.7/tempdir/struct.TempDir.html#method.into_path"><code>TempDir::into_path</code></a> 负责把删除临时目录时转换的数据传给调用者。
+因为 <code>path</code> 方法是一个 getter ，如果用 <code>get_path</code> 或者 <code>as_path</code> 就不对了。</p>
+<p>来自标准库的例子：</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/io/struct.Cursor.html#method.get_mut"><code>std::io::Cursor::get_mut</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/ptr/struct.Unique.html#method.get_mut"><code>std::ptr::Unique::get_mut</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/sync/struct.PoisonError.html#method.get_mut"><code>std::sync::PoisonError::get_mut</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/sync/atomic/struct.AtomicBool.html#method.get_mut"><code>std::sync::atomic::AtomicBool::get_mut</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/collections/hash_map/struct.OccupiedEntry.html#method.get_mut"><code>std::collections::hash_map::OccupiedEntry::get_mut</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/primitive.slice.html#method.get_unchecked"><code>&lt;[T]&gt;::get_unchecked</code></a></li>
+</ul>
+<p><a id="c-iter"></a></p>
+<h2 id="遵循-iter-iter_mut-into_iter-规范-用以生成迭代器"><a class="header" href="#遵循-iter-iter_mut-into_iter-规范-用以生成迭代器">遵循 <code>iter</code>, <code>iter_mut</code>, <code>into_iter</code> 规范 用以生成迭代器</a></h2>
+<blockquote>
+<p>Methods on collections that produce iterators follow <code>iter</code>, <code>iter_mut</code>, <code>into_iter</code> (C-ITER)</p>
+</blockquote>
+<p>参考 <a href="https://github.com/rust-lang/rfcs/blob/master/text/0199-ownership-variants.md">RFC 199</a> 。</p>
+<p>对于容纳 <code>U</code> 类型的容器 (container) ，其迭代器方法应该这样命名：</p>
+<pre><code class="language-rust ignored">fn iter(&amp;self) -&gt; Iter             // Iter implements Iterator&lt;Item = &amp;U&gt;
+fn iter_mut(&amp;mut self) -&gt; IterMut  // IterMut implements Iterator&lt;Item = &amp;mut U&gt;
+fn into_iter(self) -&gt; IntoIter     // IntoIter implements Iterator&lt;Item = U&gt;
+</code></pre>
+<p>这条原则适用于具有同质概念的集合型
+(conceptually homogeneous collections<sup class="footnote-reference"><a href="#conceptually-homogeneous">2</a></sup>) 数据结构。</p>
+<p>有一个反例： <code>str</code> 类型是有效 UTF-8 字节的切片，
+概念上与输出同类型的集合略有不同<sup class="footnote-reference"><a href="#str-iter">3</a></sup>，
+所以 <code>str</code> 没有提供一组 <code>iter</code>/<code>iter_mut</code>/<code>into_iter</code> 命名的迭代器方法，
+而是提供 <a href="https://doc.rust-lang.org/std/primitive.str.html#method.bytes"><code>str::bytes</code></a> 方法来输出字节迭代器、
+<a href="https://doc.rust-lang.org/std/primitive.str.html#method.chars"><code>str::chars</code></a> 方法来输出字符迭代器。</p>
+<div class="footnote-definition" id="conceptually-homogeneous"><sup class="footnote-definition-label">2</sup>
+<p>译者注：可以观察到，
+这一组方法都输出相同的迭代器关联类型 <code>U</code> ，
+区别仅仅在于操作数据的所有权不同， <code>iter</code> 不可变借用、 <code>iter_mut</code> 可变借用、
+<code>into_iter</code> 独立的所有权，所以认为概念上类型相同。</p>
+</div>
+<div class="footnote-definition" id="str-iter"><sup class="footnote-definition-label">3</sup>
+<p>译者注：因为 <code>str</code> 需要转化为 <strong>两种</strong> 与之相关的同样重要的类型。
+这个“反例”是 <a href="#c-iter-ty">下面一条原则</a> 的典型案例。</p>
+</div>
+<p>来自标准库的例子：</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.iter"><code>Vec::iter</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.iter_mut"><code>Vec::iter_mut</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.into_iter"><code>Vec::into_iter</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/collections/struct.BTreeMap.html#method.iter"><code>BTreeMap::iter</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/collections/struct.BTreeMap.html#method.iter_mut"><code>BTreeMap::iter_mut</code></a></li>
+</ul>
+<p><a id="c-iter-ty"></a></p>
+<h2 id="生成迭代器的方法与迭代器类型同名"><a class="header" href="#生成迭代器的方法与迭代器类型同名">生成迭代器的方法与迭代器类型同名</a></h2>
+<blockquote>
+<p>Iterator type names match the methods that produce them (C-ITER-TY)</p>
+</blockquote>
+<p>名为 <code>into_iter()</code> 的方法应该返回 <code>IntoIter</code> 类型的迭代器，
+类似地，不同名称的方法应返回对应类型的迭代器。<sup class="footnote-reference"><a href="#iter-ty">4</a></sup></p>
+<p>当用在具有模块路径前缀的自定义迭代器类型时，
+这条原则就十分合理。比如 <a href="https://doc.rust-lang.org/std/vec/struct.IntoIter.html"><code>vec::IntoIter</code></a> 。</p>
+<div class="footnote-definition" id="iter-ty"><sup class="footnote-definition-label">4</sup>
+<p>译者注：这可能与 <a href="#c-iter">上面一条原则</a> 看似矛盾，实则相辅相成。<br />
+可以把迭代器类型分成两类：与 <code>Iter</code> 概念上同质的迭代器；
+基于 <code>Iter</code> 型迭代器二度封装的迭代器。<br />
+前者命名规则和例子参考 <a href="#c-iter">上一条原则</a> ；
+后者的典型例子是 <code>std::collections</code> 模块下的 
+<a href="https://doc.rust-lang.org/std/collections/struct.BTreeMap.html"><code>BTreeMap</code></a> 、
+<a href="https://doc.rust-lang.org/std/collections/struct.HashMap.html"><code>HashMap</code></a> ，
+它们各自定义了两种迭代器，二度封装的迭代器用于迭代 Keys 和 Values 。
+<a href="https://doc.rust-lang.org/std/primitive.str.html#method.bytes"><code>str::bytes</code></a> 和 <a href="https://doc.rust-lang.org/std/primitive.str.html#method.chars"><code>str::chars</code></a> 
+也是基于 <a href="https://doc.rust-lang.org/std/slice/index.html#structs-1"><code>slice</code></a> 的
+<a href="https://doc.rust-lang.org/std/slice/struct.Iter.html"><code>Iter</code></a> 
+或 <a href="https://doc.rust-lang.org/std/slice/struct.IterMut.html"><code>IterMut</code></a> 封装的。</p>
+</div>
+<p>来自标准库的例子：</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.iter"><code>Vec::iter</code></a> 返回 <a href="https://doc.rust-lang.org/std/slice/struct.Iter.html"><code>Iter</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.iter_mut"><code>Vec::iter_mut</code></a> 返回 <a href="https://doc.rust-lang.org/std/slice/struct.IterMut.html"><code>IterMut</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/vec/struct.Vec.html#method.into_iter"><code>Vec::into_iter</code></a> 返回 <a href="https://doc.rust-lang.org/std/vec/struct.IntoIter.html"><code>IntoIter</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/collections/struct.BTreeMap.html#method.keys"><code>BTreeMap::keys</code></a> 返回 <a href="https://doc.rust-lang.org/std/collections/btree_map/struct.Keys.html"><code>Keys</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/collections/struct.BTreeMap.html#method.values"><code>BTreeMap::values</code></a> 返回 <a href="https://doc.rust-lang.org/std/collections/btree_map/struct.Values.html"><code>Values</code></a></li>
+</ul>
+<p><a id="c-feature"></a></p>
+<h2 id="cargo-feature-名中不应该有无意义的词"><a class="header" href="#cargo-feature-名中不应该有无意义的词">cargo feature 名中不应该有无意义的词</a></h2>
+<blockquote>
+<p>Feature names are free of placeholder words (C-FEATURE)</p>
+</blockquote>
+<p>给 <a href="http://doc.crates.io/manifest.html#the-features-section">Cargo feature</a> 命名时，不要带有无实际含义的的词语，
+比如无需 <code>use-abc</code> 或 <code>with-abc</code> —— 直接以 <code>abc</code> 命名。</p>
+<p>这条原则经常出现在对 Rust 标准库进行 <a href="https://doc.rust-lang.org/cargo/reference/features.html#optional-dependencies">可选依赖</a> 配置的 crate 上。
+最简洁且正确的做法是：</p>
+<pre><code class="language-toml"># In Cargo.toml
+
+[features]
+default = [&quot;std&quot;]
+std = []
+</code></pre>
+<pre><code class="language-rust ignored">// In lib.rs
+
+#![cfg_attr(not(feature = &quot;std&quot;), no_std)]
+</code></pre>
+<p>这个例子中，不要给 feature 取 <code>use-std</code> 或者 <code>with-std</code> 或者除 <code>std</code> 之外另取名字。
+feature 应与 Cargo 在推断可选依赖时隐含的 features 具有一致的名字。
+假如 <code>x</code> crate 对 Serde 和 标准库具有可选依赖关系：</p>
+<pre><code class="language-toml">[package]
+name = &quot;x&quot;
+version = &quot;0.1.0&quot;
+
+[features]
+std = [&quot;serde/std&quot;]
+
+[dependencies]
+serde = { version = &quot;1.0&quot;, optional = true }
+</code></pre>
+<p>当我们使用 <code>x</code> crate 时，可以使用 <code>features = [&quot;serde&quot;]</code> 开启 Serde 依赖。
+类似地，也可以使用 <code>features = [&quot;std&quot;]</code> 开启标准库依赖。
+Cargo 推断的隐含的 features 应该叫做 <code>serde</code> ，
+而不是 <code>use-serde</code> 或者 <code>with-serde</code> 。</p>
+<p>与之相关的是， Cargo 要求 features 应该是附加的，
+所以像 <code>no-abc</code> 的 feature 命名实际上并不正确。</p>
+<p><a id="c-word-order"></a></p>
+<h2 id="词性顺序一致"><a class="header" href="#词性顺序一致">词性顺序一致</a></h2>
+<blockquote>
+<p>Names use a consistent word order (C-WORD-ORDER)</p>
+</blockquote>
+<p>以下是来自标准库的处理错误的一些类型：</p>
+<ul>
+<li><a href="https://doc.rust-lang.org/std/env/struct.JoinPathsError.html"><code>JoinPathsError</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/str/struct.ParseBoolError.html"><code>ParseBoolError</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/char/struct.ParseCharError.html"><code>ParseCharError</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/num/struct.ParseFloatError.html"><code>ParseFloatError</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/num/struct.ParseIntError.html"><code>ParseIntError</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/sync/mpsc/enum.RecvTimeoutError.html"><code>RecvTimeoutError</code></a></li>
+<li><a href="https://doc.rust-lang.org/std/path/struct.StripPrefixError.html"><code>StripPrefixError</code></a></li>
+</ul>
+<p>这些名称都按照 <strong>动词-宾语-error</strong> 的单词顺序。
+如果增加“解析地址错误”类型，为了保持词性一致，
+应该使用 <code>ParseAddrError</code> 名称，而不是 <code>AddrParseError</code> 名称。 </p>
+<p>具体选择什么样的词性顺序并不重要，
+但务必在一个 crate 里注意要保持这样的顺序；
+若提供与标准库中相似功能的东西时，
+也要与标准库名称的词性顺序一致。</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                                                    <a rel="prev" href="checklist.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+                                                    <a rel="next" href="interoperability.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                                    <a rel="prev" href="checklist.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+                                    <a rel="next" href="interoperability.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                            </nav>
+
+        </div>
+
+        
+        
+        
+                <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+                <script src="ace.js" type="text/javascript" charset="utf-8"></script>
+        <script src="editor.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mode-rust.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-dawn.js" type="text/javascript" charset="utf-8"></script>
+        <script src="theme-tomorrow_night.js" type="text/javascript" charset="utf-8"></script>
+        
+                <script src="elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+        <script src="clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+                <script type="text/javascript" src="theme/pagetoc.js"></script>
+        
+        
+    </body>
+</html>
